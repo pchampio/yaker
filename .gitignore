@@ -18,3 +18,4 @@ build/
 tests/report/
 venv
 redis
+dump.rdb

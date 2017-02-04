@@ -7,6 +7,9 @@ curl --silent localhost:8000/users/login/  -u drakirus:jkljkljkl
 curl --silent -X POST localhost:8000/users/me/friend/add/  -H 'Authorization: Token 5be20c5fc5d62437e2811a9dce2b1123d8ba250c' \
 -H "Content-Type: application/json" -d '{"friend": "drakirus"}'
 
+curl --silent -X POST localhost:8000/users/me/friend/add/  -H 'Authorization: Token 5be20c5fc5d62437e2811a9dce2b1123d8ba250c' \
+-H "Content-Type: application/json" -d '{"friend": "pierre"}'
+
 # Token de drakirus add
 curl --silent -X POST localhost:8000/users/me/friend/add/  -H 'Authorization: Token 26325c8b4d0d94ab28a289a0fc7b20999aa6e62d' \
 -H "Content-Type: application/json" -d '{"friend": "momo"}'

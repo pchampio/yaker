@@ -21,6 +21,8 @@ from .models import Friendship
 #  There is Q objects that allow to complex lookups. or in filter
 from django.db.models import Q
 
+from django.core.cache import cache
+
 # import the logging library
 import logging
 
@@ -125,7 +127,12 @@ class AuthUser(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        logger.info(request.user)
-        logger.info(Token.objects.get(user=request.user))
 
-        return Response({'username': request.user.username})
+        response = {'username': request.user.username}
+        key = str(request.user.id) + ":info"
+
+        if key in cache:
+            response['info'] = cache.get(key)
+            cache.delete(key)
+
+        return Response(response)
