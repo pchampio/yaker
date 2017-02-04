@@ -11,7 +11,7 @@ logger = logging.getLogger('django')
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-            required=True,
+        required=True,
         validators=[
             UniqueValidator(
                 queryset=User.objects.all(),
@@ -36,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class FriendshipSerializer(serializers.ModelSerializer):
     """
-        friends table
+    friends table
     """
     user = serializers.IntegerField(
         required=True,
@@ -51,18 +51,26 @@ class FriendshipSerializer(serializers.ModelSerializer):
         """
         Check if the friendship DoesNotExist
         """
-        user_id = self.validated_data['user']
-        user= User.objects.get(id=user_id)
-
-        friend_name = self.validated_data['friend']
-        friend = User.objects.get(username=friend_name)
+        user= User.objects.get(id=self.validated_data['user'])
+        friend = User.objects.get(username=self.validated_data['friend'])
 
         friend_model = Friendship(user=user, friend=friend)
-        try:
-            friend_model.save()
-        except:
-            return None
+        friend_model.save()
         return self
+
+    def validate(self, data):
+        """
+        Check : Friend is a user (diffrent form friend adder), and not already your friend
+        """
+        try:
+            friend = User.objects.exclude(id=data['user']).get(username=data['friend'])
+            user = User.objects.get(id=data['user'])
+        except User.DoesNotExist:
+            raise serializers.ValidationError(data['friend'] + " is not a valid User")
+
+        if Friendship.objects.filter(user=user, friend=friend).exists():
+            raise serializers.ValidationError(data['friend'] + " is already your friend")
+        return data
 
     class Meta:
         model = Friendship

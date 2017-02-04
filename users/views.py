@@ -1,15 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from accounts.serializers import UserSerializer
-from accounts.serializers import FriendshipSerializer
-from rest_framework.authtoken.models import Token
 
+# serializers
+from users.serializers import UserSerializer
+from users.serializers import FriendshipSerializer
+
+# token authentication
+from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+# authentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+# models
 from django.contrib.auth.models import User
 from .models import Friendship
+
 #  There is Q objects that allow to complex lookups. or in filter
 from django.db.models import Q
 
@@ -49,25 +57,17 @@ class FriendshipVue(APIView):
         add a friend to the current user
         """
         data = {}
-        if 'user' in data:
-            del data['user']
         data['user'] = request.user.id
         if 'friend' in request.data:
             data['friend']=request.data['friend']
         logger.info(data)
         serializer = FriendshipSerializer(data=data)
         if serializer.is_valid():
-            try:
-                user = User.objects.exclude(id=data['user']).get(username=data['friend'])
-            except User.DoesNotExist:
-                return Response({'detail' : data['friend'] + " is not a valid friend" }, status=status.HTTP_400_BAD_REQUEST)
-
             friend = serializer.save()
             if friend:
                 detail_friend = serializer.data['friend']
-                return Response({'detail': detail_friend + " is now your firend"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({'detail': data["friend"] + " is already your friend"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'detail': detail_friend + " is now your firend"},
+                                status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,19 +76,46 @@ class FriendshipVue(APIView):
         get a friend to the current user
         """
         try:
-            user = User.objects.get(id=request.user.id)
-            friends = Friendship.objects.filter(Q(user=request.user) | Q(friend=request.user))
-            friends_array = []
-            for e in friends:
-                friends_array.append(e.friend.username)
-                friends_array.append(e.user.username)
-            friends_array.uni
+            friends = (Friendship.objects.filter(user=request.user))
+            friends_array = [ x.friend.username  for x in friends ]
             friends_array = filter(lambda a: a != request.user.username,friends_array)
-            logger.info(friends_array)
         except Friendship.DoesNotExist:
-            return Response({'detail' : "you have no friend"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'friends' : friends_array}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail' : "database error"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({'friends' : friends_array},
+                        status=status.HTTP_200_OK)
 
+class FriendshipDell(APIView):
+    """Delete a friend from a user"""
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format='json'):
+        """
+        add a friend to the current user
+        """
+        try:
+            friend = (Friendship.objects.get(user=request.user,
+                                                 friend=User.objects.get(
+                                                     username=request.data['friend'])))
+            friend.delete()
+        except Exception as e:
+            return Response({'detail' : ["user not found in your friend list"]},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
+
+
+
+class Login(APIView):
+    """Log a user in return the user related token"""
+
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        token = Token.objects.get(user=request.user)
+        return Response({"token": token.key} )
 
 class AuthUser(APIView):
 
