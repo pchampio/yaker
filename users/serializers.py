@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 
-from .models import Friendship
+from .models import Followership
 
 # import the logging library
 import logging
@@ -38,38 +38,38 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'password')
 
 
-class FriendshipSerializer(serializers.ModelSerializer):
+class FollowershipSerializer(serializers.ModelSerializer):
     """
-    friends table
+    followers table
     """
     user = serializers.IntegerField(
         required=True,
     )
 
-    friend = serializers.CharField(
+    follower = serializers.CharField(
         max_length=15,
         required=True,
     )
 
     def save(self):
         """
-        Check if the friendship DoesNotExist
+        Check if the followership DoesNotExist
         """
 
         user= User.objects.get(id=self.validated_data['user'])
-        friend = User.objects.get(username=self.validated_data['friend'])
+        follower = User.objects.get(username=self.validated_data['follower'])
 
-        friend_model = Friendship(user=user, friend=friend)
+        follower_model = Followership(user=user, follower=follower)
 
         #  try:
-        friend_model.save()
+        follower_model.save()
 
         new = {
             'type':'follower',
             'message': user.username + " is following you",
             'related': [user.username],
         }
-        cache_w_add("user", friend.id, "notif", new, WEEK_IN_SEC * 2)
+        cache_w_add("user", follower.id, "notif", new, WEEK_IN_SEC * 2)
 
         #  except :
             #  logger.error("fail adding user to database or cache")
@@ -78,18 +78,18 @@ class FriendshipSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """
-        Check : Friend is a user (diffrent form friend adder), and not already your friend
+        Check : Follower is a user (diffrent form follower adder), and not already your follower
         """
         try:
-            friend = User.objects.exclude(id=data['user']).get(username=data['friend'])
+            follower = User.objects.exclude(id=data['user']).get(username=data['follower'])
             user = User.objects.get(id=data['user'])
         except User.DoesNotExist:
-            raise serializers.ValidationError(data['friend'] + " is not a valid User")
+            raise serializers.ValidationError(data['follower'] + " is not a valid User")
 
-        if Friendship.objects.filter(user=user, friend=friend).exists():
-            raise serializers.ValidationError(data['friend'] + " is already your friend")
+        if Followership.objects.filter(user=user, follower=follower).exists():
+            raise serializers.ValidationError(data['follower'] + " is already your follower")
         return data
 
     class Meta:
-        model = Friendship
-        fields = ('user', 'friend')
+        model = Followership
+        fields = ('user', 'follower')

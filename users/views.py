@@ -4,7 +4,7 @@ from rest_framework import status
 
 # serializers
 from users.serializers import UserSerializer
-from users.serializers import FriendshipSerializer
+from users.serializers import FollowershipSerializer
 
 # token authentication
 from rest_framework.authtoken.models import Token
@@ -16,7 +16,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 # models
 from django.contrib.auth.models import User
-from .models import Friendship
+from .models import Followership
 
 #  There is Q objects that allow to complex lookups. or in filter
 from django.db.models import Q
@@ -45,10 +45,10 @@ class CreateUser(APIView):
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class FriendshipVue(APIView):
+class FollowershipVue(APIView):
     """
     Authentification is needed for this methods
-    Add/get a friend to the current user
+    Add/get a follower to the current user
     """
 
     authentication_classes = (TokenAuthentication,)
@@ -56,54 +56,54 @@ class FriendshipVue(APIView):
 
     def post(self, request, format='json'):
         """
-        add a friend to the current user
+        add a follower to the current user
         """
         data = {}
         data['user'] = request.user.id
-        if 'friend' in request.data:
-            data['friend']=request.data['friend']
+        if 'follower' in request.data:
+            data['follower']=request.data['follower']
         logger.info(data)
-        serializer = FriendshipSerializer(data=data)
+        serializer = FollowershipSerializer(data=data)
         if serializer.is_valid():
-            friend = serializer.save()
-            if friend:
-                detail_friend = serializer.data['friend']
-                return Response({'detail': detail_friend + " is now your firend"},
+            follower = serializer.save()
+            if follower:
+                detail_follower = serializer.data['follower']
+                return Response({'detail': detail_follower + " is now your firend"},
                                 status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, format=None):
         """
-        get a friend to the current user
+        get a follower to the current user
         """
         try:
-            friends = (Friendship.objects.filter(user=request.user))
-            friends_array = [ x.friend.username  for x in friends ]
-            friends_array = filter(lambda a: a != request.user.username,friends_array)
-        except Friendship.DoesNotExist:
+            followers = (Followership.objects.filter(user=request.user))
+            followers_array = [ x.follower.username  for x in followers ]
+            followers_array = filter(lambda a: a != request.user.username,followers_array)
+        except Followership.DoesNotExist:
             return Response({'detail' : "database error"},
                             status=status.HTTP_400_BAD_REQUEST)
-        return Response({'friends' : friends_array},
+        return Response({'followers' : followers_array},
                         status=status.HTTP_200_OK)
 
-class FriendshipDell(APIView):
-    """Delete a friend from a user"""
+class FollowershipDell(APIView):
+    """Delete a follower from a user"""
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, format='json'):
         """
-        add a friend to the current user
+        add a follower to the current user
         """
         try:
-            friend = (Friendship.objects.get(user=request.user,
-                                             friend=User.objects.get(
-                                                 username=request.data['friend'])))
-            friend.delete()
+            follower = (Followership.objects.get(user=request.user,
+                                             follower=User.objects.get(
+                                                 username=request.data['follower'])))
+            follower.delete()
         except:
-            return Response({'detail' : ["user not found in your friend list"]},
+            return Response({'detail' : ["user not found in your follower list"]},
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
 

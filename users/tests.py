@@ -35,14 +35,14 @@ class AccountsTest(APITestCase):
         # URL for the auth-view
         self.auth_url = reverse('auth-view')
 
-        # URL for the adding friend
-        self.friend_add = reverse('friend-add')
+        # URL for the adding follower
+        self.follower_add = reverse('follower-add')
 
-        # URL for the deleting friend
-        self.friend_delete = reverse('friend-delete')
+        # URL for the deleting follower
+        self.follower_delete = reverse('follower-delete')
 
-        # URL for the deleting friend
-        self.friend_list = reverse('friend-list')
+        # URL for the deleting follower
+        self.follower_list = reverse('follower-list')
 
         self.test_data = {
             'username': 'pierre',
@@ -197,11 +197,11 @@ class AccountsTest(APITestCase):
 
         client.logout()
 
-    def test_add_delete_friend(self):
+    def test_add_delete_follower(self):
 
         data = {'username': 'foobar','email': 'foobar@example.com','password': 'somepassword'}
 
-        friend_response = self.client.post(self.create_url , data, format='json')
+        follower_response = self.client.post(self.create_url , data, format='json')
 
         view = AuthUser.as_view()
 
@@ -209,21 +209,21 @@ class AccountsTest(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.test_response.data['token'])
 
         # add
-        response = client.post(self.friend_add, {"friend": data['username']}, format='json')
+        response = client.post(self.follower_add, {"follower": data['username']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # delete
-        response = client.post(self.friend_delete, {"friend": data['username']}, format='json')
+        response = client.post(self.follower_delete, {"follower": data['username']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         client.logout()
 
 
-    def test_notif_friend(self):
+    def test_notif_follower(self):
 
         data = {'username': 'foobar','email': 'foobar@example.com','password': 'somepassword'}
 
-        friend_response = self.client.post(self.create_url , data, format='json')
+        follower_response = self.client.post(self.create_url , data, format='json')
 
 
         user = User.objects.latest('id')
@@ -235,7 +235,7 @@ class AccountsTest(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.test_response.data['token'])
 
         # add
-        response = client.post(self.friend_add, {"friend": data['username']}, format='json')
+        response = client.post(self.follower_add, {"follower": data['username']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         client.logout()
 
@@ -251,7 +251,7 @@ class AccountsTest(APITestCase):
 
 
 
-    def test_add_invalid_friend(self):
+    def test_add_invalid_follower(self):
 
         view = AuthUser.as_view()
 
@@ -259,12 +259,12 @@ class AccountsTest(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.test_response.data['token'])
 
         # add
-        response = client.post(self.friend_add, {"friend": "nopeUser"}, format='json')
+        response = client.post(self.follower_add, {"follower": "nopeUser"}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         client.logout()
 
-    def test_delete_invalid_friend(self):
+    def test_delete_invalid_follower(self):
 
         view = AuthUser.as_view()
 
@@ -272,7 +272,7 @@ class AccountsTest(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.test_response.data['token'])
 
         # delete
-        response = client.post(self.friend_delete, {"friend": "nopeUser"}, format='json')
+        response = client.post(self.follower_delete, {"follower": "nopeUser"}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         client.logout()

@@ -3,13 +3,13 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
 
-class Friendship(models.Model):
+class Followership(models.Model):
     """
-        friends table
+        followers table
     """
     user = models.ForeignKey(User, related_name="user")
-    friend = models.ForeignKey(User, related_name="friend")
+    follower = models.ForeignKey(User, related_name="follower")
 
     class Meta:
-        unique_together = (("user", "friend"),)
+        unique_together = (("user", "follower"),)
 
