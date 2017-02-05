@@ -15,6 +15,14 @@ from .views import AuthUser
 
 import sys
 
+import fakeredis
+CACHES = {
+    "default": {
+        "OPTIONS": {
+            "REDIS_CLIENT_CLASS": "fakeredis.FakeStrictRedis",
+        }
+    }
+}
 
 
 class AccountsTest(APITestCase):
@@ -44,15 +52,19 @@ class AccountsTest(APITestCase):
         # response test
         self.test_response = self.client.post(self.create_url , self.test_data, format='json')
 
+    def tearDown(self):
+        from django_redis import get_redis_connection
+        get_redis_connection("default").flushall()
+
     def test_create_user(self):
         """
         Ensure we can create a new user and a valid token is created with it.
         """
         data = {
-                'username': 'foobar',
-                'email': 'foobar@example.com',
-                'password': 'somepassword'
-                }
+            'username': 'foobar',
+            'email': 'foobar@example.com',
+            'password': 'somepassword'
+        }
 
         response = self.client.post(self.create_url , data, format='json')
         user = User.objects.latest('id')
@@ -71,10 +83,10 @@ class AccountsTest(APITestCase):
         """
 
         data = {
-                'username': 'foobar',
-                'email': 'foobarbaz@example.com',
-                'password': 'foo'
-                }
+            'username': 'foobar',
+            'email': 'foobarbaz@example.com',
+            'password': 'foo'
+        }
 
         response = self.client.post(self.create_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -83,10 +95,10 @@ class AccountsTest(APITestCase):
 
     def test_create_user_with_no_password(self):
         data = {
-                'username': 'foobar',
-                'email': 'foobarbaz@example.com',
-                'password': ''
-                }
+            'username': 'foobar',
+            'email': 'foobarbaz@example.com',
+            'password': ''
+        }
 
         response = self.client.post(self.create_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -107,10 +119,10 @@ class AccountsTest(APITestCase):
 
     def test_create_user_with_no_username(self):
         data = {
-                'username': '',
-                'email': 'foobarbaz@example.com',
-                'password': 'foobarbaz'
-                }
+            'username': '',
+            'email': 'foobarbaz@example.com',
+            'password': 'foobarbaz'
+        }
 
         response = self.client.post(self.create_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -156,9 +168,9 @@ class AccountsTest(APITestCase):
 
     def test_create_user_with_no_email(self):
         data = {
-                'username' : 'foobar',
-                'email': '',
-                'password': 'foobarbaz'
+            'username' : 'foobar',
+            'email': '',
+            'password': 'foobarbaz'
         }
 
         response = self.client.post(self.create_url, data, format='json')
@@ -171,9 +183,6 @@ class AccountsTest(APITestCase):
         """
         Ensure we can Retrieve from token
         """
-
-
-        #  sys.stderr.write(repr(response.data) + '\n')
 
         view = AuthUser.as_view()
 
@@ -207,6 +216,38 @@ class AccountsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         client.logout()
+
+
+    def test_notif_friend(self):
+
+        data = {'username': 'foobar','email': 'foobar@example.com','password': 'somepassword'}
+
+        friend_response = self.client.post(self.create_url , data, format='json')
+
+
+        user = User.objects.latest('id')
+        token = Token.objects.get(user=user)
+
+
+        view = AuthUser.as_view()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.test_response.data['token'])
+
+        # add
+        response = client.post(self.friend_add, {"friend": data['username']}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        client.logout()
+
+        view = AuthUser.as_view()
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        response = client.get(self.auth_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['notif'][0]['type'], 'follower')
+        self.assertEqual(response.data['notif'][0]['message'], 'pierre is following you')
+        self.assertEqual(response.data['notif'][0]['related'], ['pierre'])
+
+
 
     def test_add_invalid_friend(self):
 

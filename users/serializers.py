@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 
 from .models import Friendship
 
-from django.core.cache import cache
-
 # import the logging library
 import logging
+
+from .cache_wrapper import *
 
 
 
@@ -60,22 +60,17 @@ class FriendshipSerializer(serializers.ModelSerializer):
         friend = User.objects.get(username=self.validated_data['friend'])
 
         friend_model = Friendship(user=user, friend=friend)
+
         try:
             friend_model.save()
 
-            logger.info(friend)
-            key = str(friend.id) + ":info"
-            new = [{
+            new = {
                 'type':'follower',
                 'message': user.username + " is following you",
                 'related': [user.username],
-            }]
-            if key in cache:
-                tmp = new[0]
-                new = cache.get(key)
-                new.append(tmp)
+            }
+            cache_w_add("user", friend.id, "notif", new, WEEK_IN_SEC * 2)
 
-            cache.set(key, new, 2592000)
         except :
             logger.error("fail adding user to database or cache")
             return None

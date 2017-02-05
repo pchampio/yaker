@@ -1,3 +1,4 @@
 Django==1.10
 djangorestframework==3.5.3
 django-redis==4.7.0
+fakeredis==0.8.2

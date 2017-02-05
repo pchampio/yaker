@@ -21,7 +21,7 @@ from .models import Friendship
 #  There is Q objects that allow to complex lookups. or in filter
 from django.db.models import Q
 
-from django.core.cache import cache
+from .cache_wrapper import *
 
 # import the logging library
 import logging
@@ -99,10 +99,10 @@ class FriendshipDell(APIView):
         """
         try:
             friend = (Friendship.objects.get(user=request.user,
-                                                 friend=User.objects.get(
-                                                     username=request.data['friend'])))
+                                             friend=User.objects.get(
+                                                 username=request.data['friend'])))
             friend.delete()
-        except Exception as e:
+        except:
             return Response({'detail' : ["user not found in your friend list"]},
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_200_OK)
@@ -127,12 +127,7 @@ class AuthUser(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-
         response = {'username': request.user.username}
-        key = str(request.user.id) + ":info"
+        response['notif'] = cache_w_gets('user', request.user.id, 'notif')
 
-        if key in cache:
-            response['info'] = cache.get(key)
-            cache.delete(key)
-
-        return Response(response)
+        return Response(response,status=status.HTTP_200_OK)
