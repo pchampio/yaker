@@ -14,17 +14,18 @@ from rest_framework.test import APIClient
 from .views import AuthUser
 
 import sys
-
-import fakeredis
-CACHES = {
-    "default": {
-        "OPTIONS": {
-            "REDIS_CLIENT_CLASS": "fakeredis.FakeStrictRedis",
+from django.test import  override_settings
+@override_settings(CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/4",
+            'TIMEOUT': None,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+            }
         }
-    }
-}
-
-
+    })
 class AccountsTest(APITestCase):
     def setUp(self):
 
@@ -52,9 +53,9 @@ class AccountsTest(APITestCase):
         # response test
         self.test_response = self.client.post(self.create_url , self.test_data, format='json')
 
-    def tearDown(self):
+    #  def tearDown(self):
         from django_redis import get_redis_connection
-        get_redis_connection("default").flushall()
+        get_redis_connection("default").flushdb()
 
     def test_create_user(self):
         """
@@ -243,6 +244,7 @@ class AccountsTest(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = client.get(self.auth_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        #  sys.stderr.write(repr(response.data) + '\n')
         self.assertEqual(response.data['notif'][0]['type'], 'follower')
         self.assertEqual(response.data['notif'][0]['message'], 'pierre is following you')
         self.assertEqual(response.data['notif'][0]['related'], ['pierre'])
