@@ -44,6 +44,9 @@ class AccountsTest(APITestCase):
         # URL for the deleting follower
         self.follower_list = reverse('follower-list')
 
+        # URL for the login
+        self.login = reverse('login')
+
         self.test_data = {
             'username': 'pierre',
             'email': 'pierre@champion.fr',
@@ -194,6 +197,28 @@ class AccountsTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['username'], self.test_response.data['username'])
+
+        client.logout()
+
+    def test_login(self):
+        """
+        Ensure we can login
+        """
+
+        view = AuthUser.as_view()
+
+        client = APIClient()
+        user = User.objects.latest('id')
+
+        user = User.objects.latest('id')
+        token = Token.objects.get(user=user)
+
+        client.force_authenticate(user=user)
+
+        response = client.get(self.login)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data['token'], token.key)
 
         client.logout()
 

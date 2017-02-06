@@ -19,6 +19,10 @@ class Game(models.Model):
     """Game table"""
     game_set = models.CharField(max_length=25, default=create_game_set)
 
+    #  def get_or_create(self):
+
+
+
 class Save(models.Model):
     """ Save table"""
     user = models.ForeignKey(User, related_name="Save_user")
