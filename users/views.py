@@ -68,7 +68,7 @@ class FollowershipVue(APIView):
             follower = serializer.save()
             if follower:
                 detail_follower = serializer.data['follower']
-                return Response({'detail': detail_follower + " is now your firend"},
+                return Response({'detail': detail_follower + " is now folloing you"},
                                 status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -77,13 +77,7 @@ class FollowershipVue(APIView):
         """
         get a follower to the current user
         """
-        try:
-            followers = (Followership.objects.filter(user=request.user))
-            followers_array = [ x.follower.username  for x in followers ]
-            followers_array = filter(lambda a: a != request.user.username,followers_array)
-        except Followership.DoesNotExist:
-            return Response({'detail' : "database error"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        followers_array = Followership.getFollowers(request.user)
         return Response({'followers' : followers_array},
                         status=status.HTTP_200_OK)
 
@@ -98,10 +92,7 @@ class FollowershipDell(APIView):
         add a follower to the current user
         """
         try:
-            follower = (Followership.objects.get(user=request.user,
-                                             follower=User.objects.get(
-                                                 username=request.data['follower'])))
-            follower.delete()
+            Followership.deleteFollower(request.user, request.data['follower'])
         except:
             return Response({'detail' : ["user not found in your follower list"]},
                             status=status.HTTP_400_BAD_REQUEST)

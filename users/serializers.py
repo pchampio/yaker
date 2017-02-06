@@ -61,19 +61,19 @@ class FollowershipSerializer(serializers.ModelSerializer):
 
         follower_model = Followership(user=user, follower=follower)
 
-        #  try:
-        follower_model.save()
+        try:
+            follower_model.save()
 
-        new = {
-            'type':'follower',
-            'message': user.username + " is following you",
-            'related': [user.username],
-        }
-        cache_w_add("user", follower.id, "notif", new, WEEK_IN_SEC * 2)
+            new = {
+                'type':'follower',
+                'message': user.username + " is following you",
+                'related': [user.username],
+            }
+            cache_w_add("user", follower.id, "notif", new, WEEK_IN_SEC * 2)
 
-        #  except :
-            #  logger.error("fail adding user to database or cache")
-            #  return None
+        except :
+            logger.error("fail adding user to database or cache")
+            return None
         return self
 
     def validate(self, data):

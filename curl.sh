@@ -26,3 +26,9 @@ curl --silent -X POST localhost:8000/users/me/follower/delete/  -H 'Authorizatio
 
 curl --silent -X POST -F "username=pierr2" -F "email=piere2@gmail.con" -F "password=sdffffffffffffcfsdf" \
   "http://127.0.0.1:8000/users/register/"
+
+
+
+
+# Token de drakirus PlaySolo
+curl --silent -X GET localhost:8000/game/playsolo/ -H 'Authorization: Token 26325c8b4d0d94ab28a289a0fc7b20999aa6e62d'
