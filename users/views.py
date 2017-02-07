@@ -18,9 +18,6 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.contrib.auth.models import User
 from .models import Followership
 
-#  There is Q objects that allow to complex lookups. or in filter
-from django.db.models import Q
-
 from .cache_wrapper import *
 
 # import the logging library

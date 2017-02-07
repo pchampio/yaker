@@ -2,14 +2,22 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
+#  https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q
+from django.db.models import Q
 
-import random as r
-import json
+import random, json, os, logging
+
+logger = logging.getLogger('django')
+
 
 def create_game_set():
+    """Generate a list of 25 Dicex2 roll"""
+    #  https://xkcd.com/221/
     set = []
-    for i in range(1,25) :
-        set.append(r.randint(1,6) + r.randint(1,6))
+    seed_bytes=128
+    for i in range(0,25) :
+        random.seed(os.urandom(seed_bytes))
+        set.append(random.randint(1,6) + random.randint(1,6))
 
     if Game.objects.filter(game_set=set).exists():
         set = create_game_set()
@@ -17,9 +25,30 @@ def create_game_set():
 
 class Game(models.Model):
     """Game table"""
-    game_set = models.CharField(max_length=25, default=create_game_set)
+    game_set = models.CharField(max_length=100, default=create_game_set)
 
-    #  def get_or_create(self):
+    def get_or_create(user):
+        """
+        Check if user has a unplayed set available in Game (using Save model)
+        if not create new set
+        """
+
+        gameObj = Game.objects.exclude(
+            Save_game_id = Save.objects.filter(
+                user=user
+            )
+        )
+        if gameObj.count() == 0:
+            #  new set
+            gameObj = Game.objects.create()
+            jsonDec = json.decoder.JSONDecoder()
+            logger.info( jsonDec.decode (gameObj.game_set))
+        else:
+            # get existing one
+            rand_game = random.randint(0,gameObj.count()-1)
+            logger.info(gameObj[rand_game].game_set)
+
+        return None
 
 
 
@@ -29,7 +58,7 @@ class Save(models.Model):
     id_game = models.ForeignKey(Game, related_name="Save_game_id")
     date = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(null=False)
-    game_board = models.CharField(max_length=25, default='')
+    game_board = models.CharField(max_length=100, default='')
 
     class Meta:
             unique_together = (('user', 'id_game'),)
