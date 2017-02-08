@@ -26,7 +26,7 @@ from django.test import  override_settings
             }
         }
     })
-class AccountsTest(APITestCase):
+class UserTest(APITestCase):
     def setUp(self):
 
         # URL for creating an account.
@@ -237,9 +237,14 @@ class AccountsTest(APITestCase):
         response = client.post(self.follower_add, {"follower": data['username']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        # list
+        response = client.get(self.follower_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         # delete
         response = client.post(self.follower_delete, {"follower": data['username']}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
         client.logout()
 

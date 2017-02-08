@@ -19,3 +19,5 @@ tests/report/
 venv
 redis
 dump.rdb
+cover/
+.coverage

@@ -35,9 +35,9 @@ class CreateUser(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
-                token = Token.objects.create(user=user)
+                # could of use models.signals but since i need the token at the end ...
                 json = serializer.data
-                json['token'] = token.key
+                json['token'] = Token.objects.create(user=user).key
                 del json['id']
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

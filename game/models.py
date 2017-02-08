@@ -40,16 +40,10 @@ class Game(models.Model):
         )
         if gameObj.count() == 0:
             #  new set
-            gameObj = Game.objects.create()
-            jsonDec = json.decoder.JSONDecoder()
-            logger.info( jsonDec.decode (gameObj.game_set))
+            return Game.objects.create()
         else:
             # get existing one
-            rand_game = random.randint(0,gameObj.count()-1)
-            logger.info(gameObj[rand_game].game_set)
-
-        return None
-
+            return gameObj[random.randint(0,gameObj.count()-1)]
 
 
 class Save(models.Model):

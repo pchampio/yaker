@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -9,6 +11,9 @@ class Followership(models.Model):
     """
     user = models.ForeignKey(User, related_name="Followership_user")
     follower = models.ForeignKey(User, related_name="Followership_follower")
+
+    def __str__(self):
+            return self.user.username
 
     class Meta:
         unique_together = (("user", "follower"),)

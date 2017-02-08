@@ -33,7 +33,7 @@ def rest_auth(func):
     """
 
     @functools.wraps(func)
-    def inner(message, *args, **kwargs):
+    def inner(self, message, *args, **kwargs):
         # Make sure there's NOT a http_session already
         try:
             # We want to parse the WebSocket (or similar HTTP-lite) message
@@ -55,6 +55,7 @@ def rest_auth(func):
             request._request = {}
             request.META["HTTP_AUTHORIZATION"] = "token {}".format(auth_token)
             for authenticator in authenticators:
+                user_auth_tuple = None
                 try:
                     user_auth_tuple = authenticator.authenticate(request)
                 except AuthenticationFailed:
@@ -68,11 +69,11 @@ def rest_auth(func):
 
         if message.user is None:
             message.reply_channel.send({'close': True})
-            raise ValueError("Missing token field. Closing channel.")
+            raise ValueError("Missing/wrong token field. Closing channel.")
 
         # Make sure there's a session key
         # Run the consumer
-        result = func(message, *args, **kwargs)
+        result = func(self, message, *args, **kwargs)
         return result
     return inner
 

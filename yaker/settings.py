@@ -58,7 +58,18 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'channels',
+    'django_nose',
 )
+
+# Use nose to run all tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=users.views,game.views',
+    '--cover-html',
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

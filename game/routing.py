@@ -1,8 +1,6 @@
 from channels.routing import route
-from .views import  ws_connect, ws_message, ws_disconnect
+from . import  consumers
 
 channel_routing = [
-    route("websocket.connect", ws_connect),
-    route("websocket.receive", ws_message),
-    route("websocket.disconnect", ws_disconnect),
+    consumers.MyConsumer.as_route(path=r"^/playsolo/"),
 ]
