@@ -32,9 +32,8 @@ class Game(models.Model):
         Check if user has a unplayed set available in Game (using Save model)
         if not create new set
         """
-
         gameObj = Game.objects.exclude(
-            Save_game_id = Save.objects.filter(
+            Save_game = Save.objects.filter(
                 user=user
             )
         )
@@ -49,10 +48,10 @@ class Game(models.Model):
 class Save(models.Model):
     """ Save table"""
     user = models.ForeignKey(User, related_name="Save_user")
-    id_game = models.ForeignKey(Game, related_name="Save_game_id")
+    game = models.ForeignKey(Game, related_name="Save_game")
     date = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(null=False)
     game_board = models.CharField(max_length=100, default='')
 
     class Meta:
-            unique_together = (('user', 'id_game'),)
+            unique_together = (('user', 'game'),)

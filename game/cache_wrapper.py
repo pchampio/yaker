@@ -15,6 +15,12 @@ def cache_w_add(relatedTo, id, typeOfInfo, data, ttl):
     return num_info
 
 
+def cache_w_update(relatedTo, id, typeOfInfo, id_info, data, ttl):
+    num_info = relatedTo + ":" + str(id) + ":" + typeOfInfo
+    cache.set(num_info + ":" + str(id_info), data, ttl)
+    return num_info
+
+
 def cache_w_gets(relatedTo, id, typeOfInfo):
     key_all = relatedTo + ":" + str(id) + ":" + typeOfInfo + ":*"
     cacheValues = []
@@ -34,5 +40,5 @@ def cache_w_delete(relatedTo, id, typeOfInfo, id_info):
     cache.delete(key)
 
 def cache_w_deletes(relatedTo, id, typeOfInfo):
-    key = relatedTo + ":" + str(id) + ":" + typeOfInfo + ":*"
+    key = relatedTo + ":" + str(id) + ":" + typeOfInfo + ""
     cache.delete_pattern(key)

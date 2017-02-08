@@ -22,7 +22,7 @@ class Followership(models.Model):
         """Get array of Users.username that *user* is following"""
         followers = (Followership.objects.filter(user=user))
         followers_array = [ x.follower.username  for x in followers ]
-        followers_array = filter(lambda a: a != user.username,followers_array)
+        #  followers_array = filter(lambda a: a != user.username,followers_array)
         return followers_array
 
     def deleteFollower(user,follower):
