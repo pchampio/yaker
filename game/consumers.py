@@ -1,17 +1,16 @@
 from django.core.serializers.json import DjangoJSONEncoder, json
 from channels import Group
 from channels.sessions import channel_session
-from .auth_token_mixin import *
+from .tokenAuthWs import *
 
 from channels.generic.websockets import JsonWebsocketConsumer
-from .cache_wrapper import *
+from django.core.cache import cache
+
+from .gameManager import *
 
 from .models import Game, Save
 from users.models import Followership
 from django.contrib.auth.models import User
-
-#  https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q
-from django.db.models import Q
 
 
 #  https://github.com/django/channels/blob/master/channels/generic/websockets.py
@@ -25,17 +24,21 @@ class MyConsumer(JsonWebsocketConsumer):
     def connect(self, message, **kwargs):
         """Perform things on connection start"""
 
-        cachedGame = cache_w_get("user", message.user.id, "sologame", 1)
-        if not cachedGame:
-            gameSession = Game.get_or_create(message.user)
-            sologame = {}
-            sologame['game_id'] = gameSession.id
-            sologame['game_set'] = gameSession.game_set
-            sologame['user_board'] = [[0]*5 for _ in range(5)]
-            sologame['index_set'] = 0
-            sologame['user_id'] = message.user.id
-            cache_w_add("user", message.user.id, "sologame", sologame, 120)
-            cachedGame = sologame
+        #  key = 'user:'+str(message.user.id)+':sologame'
+        #  if key in cache:
+            #  cachedGame = cache.get(key)
+        #  else:
+            #  gameSession = Game.get_or_create(message.user)
+            #  sologame = {}
+            #  sologame['game_id'] = gameSession.id
+            #  sologame['game_set'] = gameSession.game_set
+            #  sologame['user_board'] = [[0]*5 for _ in range(5)]
+            #  sologame['index_set'] = 0
+            #  sologame['user_id'] = message.user.id
+            #  cache.set(key, sologame, 120)
+            #  cachedGame = sologame
+
+        GameManager.create(message.user.id)
 
         message.channel_session['user'] = str(message.user.id)
 
@@ -53,10 +56,10 @@ class MyConsumer(JsonWebsocketConsumer):
             raise ValueError("No text section for incoming WebSocket frame!")
 
     def receive(self, content, user_id):
-        """ check if user is malicious (or just a dev) and give next value of board """
         jsonDec = json.decoder.JSONDecoder()
 
-        game = cache_w_get("user", user_id, "sologame",1)
+        key = 'user:'+user_id+':sologame'
+        game = cache.get(key)
         board = jsonDec.decode(game['game_set'])
 
         logger.info(game)
@@ -69,7 +72,7 @@ class MyConsumer(JsonWebsocketConsumer):
             # save in Database
             Save.objects.create(user=user, game=game_save, score=1, game_board=game_board)
             # delete from cache
-            cache_w_deletes("user",user_id, "sologame")
+            cache.delete(key)
 
             # scores
 
@@ -108,17 +111,18 @@ class MyConsumer(JsonWebsocketConsumer):
             return
 
         if "i" in content and 'j' in content and 'value' in content:
-            i = int(content['i'])
-            j = int(content['j'])
-            if 0 <= i < 5 and 0 <= j < 5 and int(content['value']) == board[game['index_set']]:
-                if game['user_board'][i][j] == 0:
-                    game['user_board'][i][j] = content['value']
-                    game['index_set'] += 1
-                    self.send(
-                        {"dice": board[game['index_set']]}
-                    )
-                    cache_w_update("user", user_id, "sologame", 1, game, WEEK_IN_SEC * 2)
-                    return
+            if content['i'].isdigit() and content['j'].isdigit() and content['value'].isdigit():
+                i = int(content['i'])
+                j = int(content['j'])
+                if 0 <= i < 5 and 0 <= j < 5 and int(content['value']) == board[game['index_set']]:
+                    if game['user_board'][i][j] == 0:
+                        game['user_board'][i][j] = content['value']
+                        game['index_set'] += 1
+                        self.send(
+                            {"dice": board[game['index_set']]}
+                        )
+                        cache.set(key, game, 604800 * 2) # 2 week
+                        return
 
         self.send({"dice":board[game['index_set']], "error":"did you try to fool me"})
 
