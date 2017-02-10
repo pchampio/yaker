@@ -22,8 +22,8 @@ from .cache_wrapper import *
 
 # import the logging library
 import logging
-
 logger = logging.getLogger('django')
+
 
 class CreateUser(APIView):
     """
