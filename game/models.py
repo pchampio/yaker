@@ -27,6 +27,10 @@ class Game(models.Model):
     """Game table"""
     game_set = models.CharField(max_length=100, default=create_game_set)
 
+
+    def __str__(self):
+        return "game_id: " + str(self.id) + "___gameSet: " + str(self.game_set)
+
     def get_or_create(user):
         """
         Check if user has a unplayed set available in Game (using Save model)
@@ -53,6 +57,9 @@ class Save(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(null=False)
     game_board = models.CharField(max_length=100, default='')
+
+    def __str__(self):
+        return "user: " + self.user.username + "___game: " + str(self.game.id) + "___score: " + str(self.score)
 
     class Meta:
             unique_together = (('user', 'game'),)

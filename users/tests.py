@@ -6,9 +6,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from rest_framework.test import APIRequestFactory
 
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from .views import AuthUser
@@ -56,7 +54,7 @@ class UserTest(APITestCase):
         # response test
         self.test_response = self.client.post(self.create_url , self.test_data, format='json')
 
-    #  def tearDown(self):
+    def tearDown(self):
         from django_redis import get_redis_connection
         get_redis_connection("default").flushdb()
 

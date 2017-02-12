@@ -13,7 +13,7 @@ class Followership(models.Model):
     follower = models.ForeignKey(User, related_name="Followership_follower")
 
     def __str__(self):
-            return self.user.username
+        return "user: " + self.user.username + "___following : " + self.follower.username
 
     class Meta:
         unique_together = (("user", "follower"),)
