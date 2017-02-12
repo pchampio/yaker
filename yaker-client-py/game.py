@@ -9,20 +9,28 @@ async def hello():
     async with websockets.connect('ws://localhost:8000/playsolo/?token='+token) as websocket:
 
         await websocket.send('{"test":1}')
-        while 1:
-            print("\n")
-            greeting = await websocket.recv()
-            greeting = jsonDec.decode(greeting)
-            pprint.pprint((greeting))
 
-            print("\n")
+            #  i = input("i :")
+        for i in range(5):
+            for j in range(5):
 
-            greeting.clear()
+                t = input("play :")
+                msg = '{"i":'+str(i)+',"j":'+str(j)+'}'
+                await websocket.send(msg)
 
-            i = input("i :")
-            j = input("j :")
-            msg = '{"i":'+str(i)+',"j":'+str(j)+'}'
-            await websocket.send(msg)
+                print("\n")
+                greeting = await websocket.recv()
+                greeting = jsonDec.decode(greeting)
+                pprint.pprint((greeting))
+                print("\n")
+                greeting.clear()
+
+        print("\n")
+        greeting = await websocket.recv()
+        greeting = jsonDec.decode(greeting)
+        pprint.pprint((greeting))
+        print("\n")
+        greeting.clear()
 
 # start
 
@@ -32,11 +40,11 @@ menu = input('Menu :\n 1- login\n 2- register\n == ')
 if menu != '1' and menu != '2':
     exit(1)
 
-user = input('user : ')
-pswd = getpass.getpass('Password:')
+#  user = input('user : ')
+#  pswd = getpass.getpass('Password:')
 
-#  user = "drakirus"
-#  pswd = "jkljkljkl"
+user = "drakirus"
+pswd = "jkljkljkl"
 if menu == '1':
     r = requests.get('http://localhost:8000/users/login/', auth=(user, pswd))
     print ("status : " + str(r.status_code))

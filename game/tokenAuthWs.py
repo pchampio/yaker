@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.settings import api_settings
 
 import logging
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 
 authenticators = [auth() for auth in api_settings.DEFAULT_AUTHENTICATION_CLASSES]

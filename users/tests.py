@@ -208,14 +208,15 @@ class UserTest(APITestCase):
         view = AuthUser.as_view()
 
         client = APIClient()
-        user = User.objects.latest('id')
+        client.login(username=self.test_data['username'], password=self.test_data['password'])
 
         user = User.objects.latest('id')
         token = Token.objects.get(user=user)
 
-        client.force_authenticate(user=user)
+        #  client.force_authenticate(user=user)
 
         response = client.get(self.login)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertEqual(response.data['token'], token.key)

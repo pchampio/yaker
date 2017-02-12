@@ -22,7 +22,7 @@ from .cache_wrapper import *
 
 # import the logging library
 import logging
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 
 class CreateUser(APIView):
@@ -59,7 +59,6 @@ class FollowershipVue(APIView):
         data['user'] = request.user.id
         if 'follower' in request.data:
             data['follower']=request.data['follower']
-        logger.info(data)
         serializer = FollowershipSerializer(data=data)
         if serializer.is_valid():
             follower = serializer.save()

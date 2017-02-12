@@ -1,6 +1,8 @@
 YAKER
 =====
 
+### <= python3.5
+
 ## using :
 * [Django](https://www.djangoproject.com/)
 * [Django-rest-framework](http://www.django-rest-framework.org/)

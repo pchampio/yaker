@@ -20,7 +20,7 @@ def cache_w_gets(relatedTo, id, typeOfInfo):
     cacheValues = []
     for info in cache.iter_keys(key_all):
         tmp = cache.get(info)
-        tmp['id'] = info[-1]
+        tmp['id_cache'] = info[-1]
         cacheValues.append(tmp)
     return cacheValues
 

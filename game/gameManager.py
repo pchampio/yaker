@@ -7,7 +7,7 @@ from users.models import Followership
 from .models import Game, Save
 
 import logging
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 class GameManger():
     """ gère le jeux """
@@ -15,9 +15,11 @@ class GameManger():
     def create(user):
         key = 'user:'+str(user.id)+':sologame'
         if key in cache:
-            cachedGame = cache.get(key)
+            logger.debug("User " + user.username + " has restart cache saved game")
         else:
             gameSession = Game.get_or_create(user)
+            logger.debug("User " + user.username + " has start a new game id : "
+                        + str(gameSession.id) )
             sologame = {}
             sologame['game_id'] = gameSession.id
             sologame['game_set'] = gameSession.game_set
@@ -25,7 +27,6 @@ class GameManger():
             sologame['index_set'] = 0
             sologame['user_id'] = user.id
             cache.set(key, sologame, 120)
-            cachedGame = sologame
 
     def save(game, user_id):
         """ game saved in Save model after it ended"""
@@ -40,7 +41,7 @@ class GameManger():
         Save.objects.create(user=user, game=game_save, score=score, game_board=game_board)
         # delete from cache
 
-        # scores
+        # scores display
 
         firsts = []
         for first in Save.objects.filter(game=game_save).order_by('-score')[:10] :
@@ -68,16 +69,20 @@ class GameManger():
                 }
             )
 
-        return(
-            {"score": score,
-             "world_first":firsts,
-             "followers_best":firsts_followers
-             }, True # close ws
-        )
+        logger.debug("User " + user.username + " has complete lvl " +
+                    str(game['game_id']) + " score : " + str(score))
+        return({
+            "score": score,
+            "world_first":firsts,
+            "followers_best":firsts_followers
+        })
 
 
     def user_input(content, user_id):
-        """ check if user is malicious (or just curious) and give next value of board """
+        """
+        check if user is malicious (or just curious) and give next value of board
+        return dict and if ws should close or not
+        """
 
         jsonDec = json.decoder.JSONDecoder()
 
@@ -85,13 +90,7 @@ class GameManger():
         game = cache.get(key)
         board = jsonDec.decode(game['game_set'])
 
-        logger.info(game)
-
-        # save the game
-        if game['index_set'] >= 24:
-            end = GameManger.save(game,user_id)
-            cache.delete(key)
-            return end
+        #  logger.debug(game)
 
         if "i" in content and 'j' in content:
             i = content['i']
@@ -102,11 +101,24 @@ class GameManger():
                         game['user_board'][i][j] = board[game['index_set']]
                         game['index_set'] += 1
                         cache.set(key, game, 604800 * 2) # 2 week
-                        return(
-                            {"dice": board[game['index_set']], "board":game['user_board']}
-                        )
 
-        return({"dice":board[game['index_set']], "error":"did you try to fool me","board":game['user_board']})
+                        # save the game
+                        if game['index_set'] > 24:
+                            end = GameManger.save(game,user_id)
+                            cache.delete(key)
+                            return end,True # close ws
+
+                        # keep going
+                        return({
+                            "dice": board[game['index_set']],
+                            "board":game['user_board']
+                        },False)
+
+        return({
+            "dice":board[game['index_set']],
+            "error":"did you try to fool me",
+            "board":game['user_board']
+        },False)
 
 
 

@@ -4,14 +4,11 @@ from django.contrib.auth.models import User
 
 from .models import Followership
 
-# import the logging library
 import logging
+logger = logging.getLogger(__name__)
 
 from .cache_wrapper import *
 
-
-
-logger = logging.getLogger('django')
 
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -32,6 +29,25 @@ class UserSerializer(serializers.ModelSerializer):
     )
     password = serializers.CharField(min_length=6, max_length=100,
                                      write_only=True)
+
+    # override default settings for password
+    def create(self, validated_data):
+            password = validated_data.pop('password', None)
+            instance = self.Meta.model(**validated_data)
+            if password is not None:
+                instance.set_password(password)
+            instance.save()
+            return instance
+
+    # override default settings for password
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
 
     class Meta:
         model = User

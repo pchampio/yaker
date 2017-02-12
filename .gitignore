@@ -21,3 +21,4 @@ redis
 dump.rdb
 cover/
 .coverage
+logfile

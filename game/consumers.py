@@ -4,7 +4,7 @@ from .tokenAuthWs import *
 from .gameManager import *
 
 import logging
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 #  https://github.com/django/channels/blob/master/channels/generic/websockets.py
 class MyConsumer(JsonWebsocketConsumer):
@@ -26,19 +26,22 @@ class MyConsumer(JsonWebsocketConsumer):
         message.reply_channel.send({"accept": True})
 
 
-
-    def raw_receive(self, message, **kwargs):
+    def raw_receive(self, message, **kwargsself):
         """Called when a WebSocket frame is received."""
-        if "text" in message:
-            logger.info(message['text'])
+        try:
             self.receive(json.loads(message['text']), message.channel_session['user'])
-        else:
-            raise ValueError("No text section for incoming WebSocket frame!")
+        except:
+            self.receive({}, message.channel_session['user'])
+            logger.error("Error parsing incoming json WebSocket")
 
     def receive(self, content, user_id):
         """ GameManger do the work """
 
-        self.send(GameManger.user_input(content, user_id))
+        return_value, close = GameManger.user_input(content, user_id)
+        self.send(return_value)
+        if close:
+            self.close()
+
 
     # disconnect gerer par WebsocketConsumer
 

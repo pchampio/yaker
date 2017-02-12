@@ -7,7 +7,7 @@ from django.db.models import Q
 
 import random, json, os, logging
 
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 
 def create_game_set():
@@ -33,12 +33,13 @@ class Game(models.Model):
         if not create new set
         """
         gameObj = Game.objects.exclude(
-            Save_game = Save.objects.filter(
+            Save_game__in = Save.objects.filter(
                 user=user
             )
         )
         if gameObj.count() == 0:
             #  new set
+            logger.debug("Create new game set (" + user.username + " has complete all exists one)")
             return Game.objects.create()
         else:
             # get existing one

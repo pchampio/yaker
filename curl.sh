@@ -27,8 +27,7 @@ http post localhost:8000/users/me/follower/delete/ \
 'authorization:token 5be20c5fc5d62437e2811a9dce2b1123d8ba250c' \
   follower=drakirus
 
-http POST localhost:8000/users/register/ username=pierr2 email=pierr2@gmail.con password=jlkjkljkljkl
+http POST localhost:8000/users/register/ username=Akumok \
+  email=pierrsdddf@gmail.con password=jlkjkljkljkl
 
-
-# Token de drakirus PlaySolo
-http GET localhost:8000/game/playsolo/ 'Authorization:token 26325c8b4d0d94ab28a289a0fc7b20999aa6e62d'
+http GET localhost:8000/users/login/ -a Akumok:jlkjkljkljkl
