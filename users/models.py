@@ -18,15 +18,17 @@ class Followership(models.Model):
     class Meta:
         unique_together = (("user", "follower"),)
 
-    def getFollowers(user):
+    @classmethod
+    def getFollowers(cls, user):
         """Get array of Users.username that *user* is following"""
-        followers = (Followership.objects.filter(user=user))
+        followers = (cls.objects.filter(user=user))
         followers_array = [ x.follower.username  for x in followers ]
         #  followers_array = filter(lambda a: a != user.username,followers_array)
         return followers_array
 
-    def deleteFollower(user,follower):
-        follower = (Followership.objects.
+    @classmethod
+    def deleteFollower(cls, user, follower):
+        follower = (cls.objects.
                     get(user=user,
                         follower=User.objects.get(
                         username=follower)))

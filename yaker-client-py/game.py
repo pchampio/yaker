@@ -32,6 +32,15 @@ async def hello():
         print("\n")
         greeting.clear()
 
+
+async def lobby():
+    async with websockets.connect('ws://localhost:8000/playmulti/lobby/?token='+token+"&room=test") as websocket:
+
+        #  await websocket.send('{"test":1}')
+
+        greeting = await websocket.recv()
+        greeting = jsonDec.decode(greeting)
+        pprint.pprint((greeting))
 # start
 
 jsonDec = json.decoder.JSONDecoder()
@@ -75,10 +84,8 @@ if r.status_code != 200:
 
 while 1:
     print ("\n")
-    menu = input('Coucou :\n 1- Add-follower\n 2- List-follower\n 3- Delete-follower\n 4- PlaySolo\n == ')
+    menu = input('Coucou :\n 1- Add-follower\n 2- List-follower\n 3- Delete-follower\n 4- PlaySolo\n 5- CreateLobby\n == ')
     menu = int(menu)
-    if 1 < menu > 4:
-        exit(1)
 
     if menu == 1:
         user = input('user ? : ')
@@ -103,3 +110,6 @@ while 1:
 
     if menu == 4:
         asyncio.get_event_loop().run_until_complete(hello())
+
+    if menu == 5:
+        asyncio.get_event_loop().run_until_complete(lobby())

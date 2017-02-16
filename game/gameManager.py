@@ -6,10 +6,12 @@ from django.core.serializers.json import DjangoJSONEncoder, json
 from users.models import Followership
 from .models import Game, Save
 
+from .score import *
+
 import logging
 logger = logging.getLogger(__name__)
 
-class GameManger():
+class GameSolo():
     """ gère le jeux """
 
     def create(user):
@@ -104,7 +106,7 @@ class GameManger():
 
                         # save the game
                         if game['index_set'] > 24:
-                            end = GameManger.save(game,user_id)
+                            end = GameSolo.save(game,user_id)
                             cache.delete(key)
                             return end,True # close ws
 
@@ -120,55 +122,59 @@ class GameManger():
             "board":game['user_board']
         },False)
 
+class GameMultiLobby():
 
+    def newLobby(user, room):
+        key = "lobby:"+room
+        game = None
+        if key in cache:
+            game = cache.get(key)
+            new_user = {"name":user.username,"id":user.id}
+            if new_user in game['players']:
+                return {"group":str(game)}
+            if user.id in game['ban']:
+                return {"user":"You are bot allowed to enter this lobby"}
+            game['players'].append(new_user)
+            cache.set(key,game,60*10)
+            logger.debug("User " + user.username + " has join a lobby : "+room)
+        else:
+            game = {"op": user.id, "players":[{"name":user.username,"id":user.id}],"ban":[]}
+            cache.set(key,game , 60 * 2)
+            logger.debug("User " + user.username + " has start a new lobby : "+room)
 
-def is_Sorted(lst):
-    if len(lst) == 1:
-       return True
-    return lst[0] < lst[1] and is_Sorted(lst[1:])
+        return {"group":str(game)}
 
-def diagonal(matrix):
-    return ([matrix[i][i] for i in range(min(len(matrix[0]),len(matrix)))])
+    def user_input(content, channel_session):
 
-def score_in_row(row):
-    row_count = []
-    pts = 0
-    for item in row:
-         row_count.append(row.count(item))
+        key = "lobby:"+channel_session['room']
+        game = cache.get(key)
 
-    if row_count.count(2) == 4: # 2 paire
-        pts += 3
-    elif row_count.count(4) == 4: # carre
-        pts += 6
-    elif row_count.count(5) == 5: # 5x
-        pts += 8
-    elif row_count.count(3) == 3 and row_count.count(2) == 2: # full
-        pts += 6
-    elif row_count.count(3) == 3: # brelan
-        pts += 3
-    elif row_count.count(2) == 2: # paire
-        pts += 1
-    elif row_count.count(1) == 5:
-        if max(row) - min(row) == 4:
-            if  is_Sorted(row):
-                pts += 12 # suite sorted
+        user_id = int(channel_session['user'])
+
+        jsonDec = json.decoder.JSONDecoder()
+
+        if "leave" in content:
+            if int(game['op']) == user_id:
+                cache.delete(key)
+                return {"group" :"Operator Canceled the game"}, True
             else:
-                pts += 8 # suite
-    return pts
+                for i in reversed(range(len(game['players']))):
+                    if game['players'][i].get('id') == user_id:
+                        game['players'].pop(i)
 
+                cache.set(key, game, 60 * 10)
+                return {"group":str(game)}, False
 
-def score_in_board(board):
-    pts = 0
-    for row in board:
-        pts += score_in_row(row)
+        if "ban" in content:
+            ban = int(content['ban'])
 
-    pts += score_in_row(diagonal(board))
-    return pts
+            if int(game['op']) == user_id and user_id != ban:
+                for i in reversed(range(len(game['players']))):
+                    if game['players'][i].get('id') == ban:
+                        game['players'].pop(i)
 
-def Score(board):
-    #  for index, row in enumerate(board):
-        #  board[index] = list(map(int, row))
-
-    # rotation 90* pour calcul des col
-    board2 = list(zip(*board[::-1]))
-    return (score_in_board(board) + score_in_board(board2))
+                game['ban'].append(ban)
+                cache.set(key, game, 60 * 10)
+                return {"group":str(game)}, False
+            else:
+                return {"user":"Bad request"}, False

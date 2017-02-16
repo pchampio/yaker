@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
-#  https://docs.djangoproject.com/en/1.7/topics/db/queries/#complex-lookups-with-q
-from django.db.models import Q
 
 import random, json, os, logging
 

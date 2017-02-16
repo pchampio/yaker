@@ -2,5 +2,6 @@ from channels.routing import route
 from . import  consumers
 
 channel_routing = [
-    consumers.MyConsumer.as_route(path=r"^/playsolo/"),
+    consumers.ConsumerSolo.as_route(path=r"^/playsolo/"),
+    consumers.ConsumerMultiLobby.as_route(path=r"^/playmulti/lobby/"),
 ]
