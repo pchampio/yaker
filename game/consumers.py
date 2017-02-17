@@ -3,6 +3,12 @@ from channels.generic.websockets import JsonWebsocketConsumer
 from .tokenAuthWs import rest_auth
 from .gameManager import *
 
+# Get channel_layer function
+from channels.asgi import get_channel_layer
+
+from channels.handler import AsgiRequest
+from channels import Group
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,8 +51,6 @@ class ConsumerSolo(JsonWebsocketConsumer):
     # disconnect gerer par WebsocketConsumer
 
 
-from channels.handler import AsgiRequest
-from channels import Group
 class ConsumerMultiLobby(JsonWebsocketConsumer):
 
     # Doc : always guaranteed that connect will run before any receives
@@ -86,6 +90,9 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
         if 'group' in lobbyMsg:
             Group(room).send({"text": lobbyMsg['group']})
 
+        if 'user_close' in lobbyMsg:
+            self.close()
+
     def raw_receive(self, message, **kwargsself):
         """Called when a WebSocket frame is received."""
         try:
@@ -97,7 +104,7 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
 
     def receive(self, content, channel_session):
         """ GameMultiLobby do the work """
-        return_value, close = GameMultiLobby.user_input(content, channel_session)
+        return_value = GameMultiLobby.user_input(content, channel_session)
 
         if 'user' in return_value:
             self.send(return_value['user'])
@@ -105,5 +112,34 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
         if 'group' in return_value:
             Group(channel_session['room']).send({"text": return_value['group']})
 
-        if close:
+        channel_layer = get_channel_layer()
+        ch_group_list = channel_layer.group_channels('test')
+        logger.info(ch_group_list)
+
+
+        if 'group_close' in return_value:
             Group(channel_session['room']).send({"close":True})
+
+        if 'user_close' in return_value:
+            self.close()
+
+    def raw_disconnect(self, message, **kwargs):
+
+        Group(message.channel_session['room']).discard(message.reply_channel)
+
+        return_value = GameMultiLobby.user_input({"leave":"1"}, message.channel_session)
+
+        channel_layer = get_channel_layer()
+        ch_group_list = channel_layer.group_channels('test')
+        logger.info(ch_group_list)
+
+
+        if 'user' in return_value:
+            self.send(return_value['user'])
+
+        if 'group' in return_value:
+            Group(message.channel_session['room']).send({"text": return_value['group']})
+
+        if 'group_close' in return_value:
+            Group(message.channel_session['room']).send({"close":True})
+

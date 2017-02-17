@@ -21,7 +21,7 @@ class GameSolo():
         else:
             gameSession = Game.get_or_create(user)
             logger.debug("User " + user.username + " has start a new game id : "
-                        + str(gameSession.id) )
+                    + str(gameSession.id) )
             sologame = {}
             sologame['game_id'] = gameSession.id
             sologame['game_set'] = gameSession.game_set
@@ -48,40 +48,40 @@ class GameSolo():
         firsts = []
         for first in Save.objects.filter(game=game_save).order_by('-score')[:10] :
             firsts.append(
-                {
-                    "name" :first.user.username,
-                    "score" :first.score,
-                }
-            )
+                    {
+                        "name" :first.user.username,
+                        "score" :first.score,
+                        }
+                    )
 
-        firsts_followers = []
+            firsts_followers = []
 
         followers = Followership.objects.filter(user=user)
         followers_array = [ x.follower  for x in followers ]
 
         for first in Save.objects.filter(
-            game=game_save,
-            user__in=followers_array
-        ).order_by('-score'):
+                game=game_save,
+                user__in=followers_array
+                ).order_by('-score'):
             firsts_followers.append(
-                {
-                    "name" :first.user.username,
-                    "score" :first.score,
-                    "board" : jsonDec.decode(first.game_board),
-                }
-            )
+                    {
+                        "name" :first.user.username,
+                        "score" :first.score,
+                        "board" : jsonDec.decode(first.game_board),
+                        }
+                    )
 
-        logger.debug("User " + user.username + " has complete lvl " +
+            logger.debug("User " + user.username + " has complete lvl " +
                     str(game['game_id']) + " score : " + str(score))
-        return({
-            "score": score,
-            "world_first":firsts,
-            "followers_best":firsts_followers
-        })
+            return({
+                "score": score,
+                "world_first":firsts,
+                "followers_best":firsts_followers
+                })
 
 
-    def user_input(content, user_id):
-        """
+            def user_input(content, user_id):
+                """
         check if user is malicious (or just curious) and give next value of board
         return dict and if ws should close or not
         """
@@ -114,13 +114,13 @@ class GameSolo():
                         return({
                             "dice": board[game['index_set']],
                             "board":game['user_board']
-                        },False)
+                            },False)
 
-        return({
-            "dice":board[game['index_set']],
-            "error":"did you try to fool me",
-            "board":game['user_board']
-        },False)
+                        return({
+                            "dice":board[game['index_set']],
+                            "error":"did you try to fool me",
+                            "board":game['user_board']
+                            },False)
 
 class GameMultiLobby():
 
@@ -132,11 +132,17 @@ class GameMultiLobby():
             new_user = {"name":user.username,"id":user.id}
             if new_user in game['players']:
                 return {"group":str(game)}
+
             if user.id in game['ban']:
-                return {"user":"You are bot allowed to enter this lobby"}
+                return {
+                    "user":"You are bot allowed to enter this lobby",
+                    "user_close":True
+            }
+
             game['players'].append(new_user)
             cache.set(key,game,60*10)
             logger.debug("User " + user.username + " has join a lobby : "+room)
+
         else:
             game = {"op": user.id, "players":[{"name":user.username,"id":user.id}],"ban":[]}
             cache.set(key,game , 60 * 2)
@@ -147,23 +153,26 @@ class GameMultiLobby():
     def user_input(content, channel_session):
 
         key = "lobby:"+channel_session['room']
+        if key not in cache:
+            return {"goup":"lobby discarded", "group_close":True}
+
         game = cache.get(key)
 
         user_id = int(channel_session['user'])
 
-        jsonDec = json.decoder.JSONDecoder()
+        loggedInLobby =  any(d.get('id', None) == user_id for d in game['players'])
 
-        if "leave" in content:
+        if "leave" in content or not loggedInLobby:
             if int(game['op']) == user_id:
                 cache.delete(key)
-                return {"group" :"Operator Canceled the game"}, True
+                return {"group" :"Operator Canceled the game","group_close":True}
             else:
                 for i in reversed(range(len(game['players']))):
                     if game['players'][i].get('id') == user_id:
                         game['players'].pop(i)
 
                 cache.set(key, game, 60 * 10)
-                return {"group":str(game)}, False
+                return {"group":str(game),"user_close":True}
 
         if "ban" in content:
             ban = int(content['ban'])
@@ -173,8 +182,12 @@ class GameMultiLobby():
                     if game['players'][i].get('id') == ban:
                         game['players'].pop(i)
 
-                game['ban'].append(ban)
+                if ban not in game['ban']:
+                    game['ban'].append(ban)
                 cache.set(key, game, 60 * 10)
-                return {"group":str(game)}, False
+                return {"group":str(game)}
             else:
-                return {"user":"Bad request"}, False
+                return {"user":"Bad request"}
+
+
+        return {"user":"Bad request"}
