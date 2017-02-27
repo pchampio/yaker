@@ -1,7 +1,7 @@
 YAKER
 =====
 
-### <= python3.5
+### pour python3.5 ou plus
 
 ## using :
 * [Django](https://www.djangoproject.com/)
