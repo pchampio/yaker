@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html ng-app="app">
+  {% load static from staticfiles %}
   <head>
     <meta charset="utf-8" />
     <title>AngularJS User Registration and Login Example</title>
@@ -27,24 +28,20 @@
     </div>
 
 
-    <script src="./dist/jquery.min.js"></script>
-    <script src="./dist/angular.min.js"></script>
-    <script src="./dist/angular.route.min.js"></script>
-    <script src="./dist/angular.cookies.min.js"></script>
-
-    <script src="./dist/angular-animate.min.js"></script>
-    <script src="./dist/angular-sanitize.min.js"></script>
-    <script src="./dist/ui-bootstrap-tpls-2.5.0.min.js"></script>
-
-    <script src="./app.js"></script>
-
-    <script src="./app-services/flash.service.js"></script>
-    <script src="./app-services/user.service.js"></script>
-
-    <script src="./home/home.controller.js"></script>
-    <script src="./login/login.controller.js"></script>
-    <script src="./register/register.controller.js"></script>
-    <script src="./sologame/sologame.controller.js"></script>
+    <script src="{% static dist/jquery.min.js %}"></script>
+    <script src="{% static dist/angular.min.js %}"></script>
+    <script src="{% static dist/angular.route.min.js %}"></script>
+    <script src="{% static dist/angular.cookies.min.js %}"></script>
+    <script src="{% static dist/angular-animate.min.js %}"></script>
+    <script src="{% static dist/angular-sanitize.min.js %}"></script>
+    <script src="{% static dist/ui-bootstrap-tpls-2.5.0.min.js %}"></script>
+    <script src="{% static app.js %}"></script>
+    <script src="{% static app-services/flash.service.js %}"></script>
+    <script src="{% static app-services/user.service.js %}"></script>
+    <script src="{% static home/home.controller.js %}"></script>
+    <script src="{% static login/login.controller.js %}"></script>
+    <script src="{% static register/register.controller.js %}"></script>
+    <script src="{% static sologame/sologame.controller.js %}"></script>
 
   </body>
 </html>
