@@ -1,0 +1,76 @@
+﻿<h1>Hi {{vm.user}}!</h1>
+<p>You're logged in!!</p>
+
+<a href="#!/playsolo" class="btn btn-default btn-lg btn-block">Play Solo</a>
+
+<form name="form" role="form">
+  <div class="form-group">
+    <h5 class="control-label">Follower</h5>
+    <div class="input-group">
+      <span class="input-group-addon">User: </span>
+      <input type="text" class="form-control" ng-model="vm.follower" required>
+      <span class="input-group-btn">
+        <img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+        <button type="submit" custom-submit ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-default" type="button" fire="vm.addFollower()">Add</button>
+        <button type="submit" custom-submit ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-default" type="button" fire="vm.dellFollower()">Delete</button>
+      </span>
+    </div>
+  </div>
+</form>
+
+<h5 ng-if="vm.notif.length > 0">All notification :</h5>
+<ul>
+  <div ng-repeat="notif in vm.notif">
+    <div class="{{notif.class}}" >
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          {{notif.type}}
+          <a class="pull-right" ng-click="vm.deleteNotif(notif.id_cache)">Delete</a></h3>
+      </div>
+      <div class="panel-body">
+        {{notif.message}}
+        <button type="button" ng-show="notif.type == 'Follower'"
+          class="btn btn-default btn-sm pull-right" ng-click="vm.open('sm', notif)">Follow back</button>
+      </div>
+    </div>
+  </div>
+
+
+</ul>
+
+<script type="text/ng-template" id="addFollowerModal.html">
+  <div class="modal-header">
+    <h3 class="modal-title" id="modal-title">Follow {{vm.user}}</h3>
+  </div>
+
+  <div class="modal-body" id="modal-body">
+    <div class="row">
+      <div class="col-md-2 col-md-offset-5">
+
+        <img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+
+      </div>
+
+      <div  ng-if="vm.ErrorLoading" class="col-md-10 col-md-offset-1">
+        <div  class="panel panel-danger">
+          <div class="panel-heading">
+            <h3 class="panel-title">Error</h3>
+          </div>
+          <div class="panel-body">
+            {{vm.msgError}}
+          </div>
+        </div>
+        </div>
+
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="vm.ok()">Follow</button>
+    <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Close</button>
+  </div>
+</script>
+
+<p>&nbsp;</p>
+<p><a href="#!/login" class="btn btn-primary">Logout</a></p>
+

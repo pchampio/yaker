@@ -1,7 +1,8 @@
 from channels.generic.websockets import JsonWebsocketConsumer
 
 from .tokenAuthWs import rest_auth
-from .gameManager import *
+from .playsolo import *
+from .playmulti import *
 
 # Get channel_layer function
 from channels.asgi import get_channel_layer
@@ -37,9 +38,9 @@ class ConsumerSolo(JsonWebsocketConsumer):
         try:
             self.receive(json.loads(message['text']), message.channel_session['user'])
         except:
-            self.receive({}, message.channel_session['user'])
             logger.error("User " + message.channel_session['username'] +
                     ": Error parsing incoming json WebSocket:\nJson:\t" + message['text'])
+            self.receive({}, message.channel_session['user'])
 
     def receive(self, content, user_id):
         """ GameSolo do the work """
@@ -112,11 +113,6 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
         if 'group' in return_value:
             Group(channel_session['room']).send({"text": return_value['group']})
 
-        channel_layer = get_channel_layer()
-        ch_group_list = channel_layer.group_channels('test')
-        logger.info(ch_group_list)
-
-
         if 'group_close' in return_value:
             Group(channel_session['room']).send({"close":True})
 
@@ -128,11 +124,6 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
         Group(message.channel_session['room']).discard(message.reply_channel)
 
         return_value = GameMultiLobby.user_input({"leave":"1"}, message.channel_session)
-
-        channel_layer = get_channel_layer()
-        ch_group_list = channel_layer.group_channels('test')
-        logger.info(ch_group_list)
-
 
         if 'user' in return_value:
             self.send(return_value['user'])

@@ -1,0 +1,30 @@
+﻿
+.btn-sq {
+  width: 84px !important;
+  height: 84px !important;
+  line-height: 84px;
+  text-align: center;
+  font-size: 50px;
+  padding: 0;
+  border-radius: 0;
+
+}
+
+.roll-dice {
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  background-color: transparent;
+  color: #ff9800;
+  padding: 0.25em;
+
+}
+.roll-dice h3 {
+  color: #ff9800;
+  display: inline-table;
+}
+.roll-dice svg {
+  fill: #ff9800;
+  display: inline-table;
+  height: 3em;
+}

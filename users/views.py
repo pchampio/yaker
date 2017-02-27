@@ -18,12 +18,15 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.contrib.auth.models import User
 from .models import Followership
 
+#  There is Q objects that allow to complex lookups. or in filter
+from django.db.models import Q
+
 from .cache_wrapper import *
 
 # import the logging library
 import logging
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger('django')
 
 class CreateUser(APIView):
     """
@@ -35,9 +38,9 @@ class CreateUser(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
-                # could of use models.signals but since i need the token at the end ...
+                token = Token.objects.create(user=user)
                 json = serializer.data
-                json['token'] = Token.objects.create(user=user).key
+                json['token'] = token.key
                 del json['id']
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -59,12 +62,13 @@ class FollowershipVue(APIView):
         data['user'] = request.user.id
         if 'follower' in request.data:
             data['follower']=request.data['follower']
+        logger.info(data)
         serializer = FollowershipSerializer(data=data)
         if serializer.is_valid():
             follower = serializer.save()
             if follower:
                 detail_follower = serializer.data['follower']
-                return Response({'detail': detail_follower + " is now followed"},
+                return Response({'detail': detail_follower + " is now folloing you"},
                                 status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +108,7 @@ class Login(APIView):
 
     def get(self, request, format=None):
         token = Token.objects.get(user=request.user)
-        return Response({"token": token.key},status=status.HTTP_200_OK )
+        return Response({"token": token.key} )
 
 class AuthUser(APIView):
 
@@ -118,3 +122,8 @@ class AuthUser(APIView):
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
 
         return Response(response,status=status.HTTP_200_OK)
+
+    def delete(self, request, id, format=None):
+        cache_w_delete('user', request.user.id, 'notif', id)
+        return Response(None,status=status.HTTP_200_OK)
+

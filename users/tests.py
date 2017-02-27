@@ -274,7 +274,7 @@ class UserTest(APITestCase):
         response = client.get(self.auth_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         #  sys.stderr.write(repr(response.data) + '\n')
-        self.assertEqual(response.data['notif'][0]['type'], 'follower')
+        self.assertEqual(response.data['notif'][0]['type'], 'Follower')
         self.assertEqual(response.data['notif'][0]['message'], 'pierre is following you')
         self.assertEqual(response.data['notif'][0]['related'], ['pierre'])
 

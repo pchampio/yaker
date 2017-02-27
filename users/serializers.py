@@ -81,7 +81,7 @@ class FollowershipSerializer(serializers.ModelSerializer):
             follower_model.save()
 
             new = {
-                'type':'follower',
+                'type':'Follower',
                 'message': user.username + " is following you",
                 'related': [user.username],
             }
@@ -103,7 +103,7 @@ class FollowershipSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(data['follower'] + " is not a valid User")
 
         if Followership.objects.filter(user=user, follower=follower).exists():
-            raise serializers.ValidationError(data['follower'] + " is already your follower")
+            raise serializers.ValidationError(data['follower'] + " is already followed")
         return data
 
     class Meta:
