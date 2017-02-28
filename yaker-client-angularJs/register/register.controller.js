@@ -19,7 +19,7 @@
             FlashService.Success('<strong>Registration successful</strong>', true);
             $location.path('/');
           } else {
-            FlashService.Error(response.message);
+            vm.error = response.message
             vm.dataLoading = false;
           }
         });

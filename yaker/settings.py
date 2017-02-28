@@ -27,10 +27,14 @@ DEBUG = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATIC_ROOT = os.path.join(os.path.abspath(
-    os.path.join(BASE_DIR, 'yaker-client-angularJs')), '')
+STATIC_URL = '/yaker-client-angularJs/'
 
-STATIC_URL = '/static/'
+# look in root dir
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'yaker-client-angularJs'),
+)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 TEMPLATES = [
     {
@@ -61,7 +65,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    #  'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',

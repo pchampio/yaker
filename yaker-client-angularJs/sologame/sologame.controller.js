@@ -5,13 +5,18 @@
     .module('app')
     .controller('SoloGameController', SoloGameController);
 
-  SoloGameController.$inject = ['$location', 'UserService', 'FlashService', '$rootScope', '$route'];
-  function SoloGameController($location, UserService, FlashService, $rootScope, $route) {
+  SoloGameController.$inject = ['$location', 'UserService',
+                                'FlashService', '$rootScope',
+                                '$route', '$uibModal', '$document'];
+  function SoloGameController($location, UserService,
+                              FlashService, $rootScope,
+                              $route, $uibModal, $document) {
     var vm = this;
 
     vm.place = place;
     vm.reload = reload;
     vm.game = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+    vm.open = open;
 
 
     function place(i,j){
@@ -26,7 +31,7 @@
 
     var token = $rootScope.globals.currentUser.token;
 
-    var socket = new WebSocket("ws://" + "localhost:8000/playsolo/?token=" + token);
+    var socket = new WebSocket("ws://" + $rootScope.backendWs + "/playsolo/?token=" + token);
     socket.onmessage = function(e) {
 
       var response = JSON.parse(e.data)
@@ -65,8 +70,34 @@
     }
     // Call onopen directly if socket is already open
     if (socket.readyState == WebSocket.OPEN) socket.onopen();
-  }
 
+    function open(size, row, parentSelector){
+      var parentElem = parentSelector ?
+        angular.element($document[0].querySelector('.modal-demo ' + parentSelector)) : undefined;
+      var modalInstance = $uibModal.open({
+        animation: true,
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        templateUrl: 'howFollowerBoard.html',
+        controller: 'howFollowerBoard',
+        controllerAs: 'vm',
+        size: size,
+        appendTo: parentElem,
+        resolve: {
+          row: function() {
+            return row;
+          }
+        }
+      });
+
+      modalInstance.result.then(function(rep) {
+        console.log(rep);
+      }, function() {
+        console.log('Modal dismissed at: ' + new Date());
+      });
+    };
+
+  }
 
 
 })();

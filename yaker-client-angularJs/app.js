@@ -11,25 +11,25 @@
         $routeProvider
             .when('/', {
                 controller: 'HomeController',
-                templateUrl: 'home/home.view.html',
+                templateUrl: '/yaker-client-angularJs/home/home.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/login', {
                 controller: 'LoginController',
-                templateUrl: 'login/login.view.html',
+                templateUrl: '/yaker-client-angularJs/login/login.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/register', {
                 controller: 'RegisterController',
-                templateUrl: 'register/register.view.html',
+                templateUrl: '/yaker-client-angularJs/register/register.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/playsolo', {
                 controller: 'SoloGameController',
-                templateUrl: 'sologame/sologame.view.html',
+                templateUrl: '/yaker-client-angularJs/sologame/sologame.view.html',
                 controllerAs: 'vm'
             })
 
@@ -38,6 +38,8 @@
 
     run.$inject = ['$rootScope', '$location', '$cookies', '$http'];
     function run($rootScope, $location, $cookies, $http) {
+      $rootScope.backend = "http://localhost:8000"
+      $rootScope.backendWs = "localhost:8000"
         // keep user logged in after page refresh
         $rootScope.globals = $cookies.getObject('globals') || {};
         if ($rootScope.globals.currentUser) {

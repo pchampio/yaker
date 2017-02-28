@@ -1,12 +1,10 @@
 ﻿(function () {
-  'use strict';
+  "use strict";
 
-
-  $.getScript("home/controller/addFollowerCtrl.js");
   angular
     .module('app')
-    .controller('HomeController', HomeController)
-    .directive('customSubmit', customSubmit);
+    .directive('customSubmit', customSubmit)
+    .controller('HomeController', HomeController);
 
   HomeController.$inject = ['UserService', 'FlashService', '$rootScope', '$uibModal', '$document'];
   function HomeController(UserService, FlashService, $rootScope, $uibModal, $document) {
@@ -33,13 +31,10 @@
           vm.notif = res.data.notif;
           for (var i = 0; i < vm.notif.length; i++) {
             if (vm.notif[i].type == 'Follower'){
-              vm.notif[i]["class"] = 'panel panel-primary';
+              vm.notif[i]["class"] = "info"
             }
             else if (vm.notif[i].type == 'Info'){
-              vm.notif[i]["class"] = 'panel panel-info';
-            }
-            else{
-              vm.notif[i]["class"] = 'panel panel-warning';
+              vm.notif[i]["class"] = "success"
             }
           }
         });

@@ -22,49 +22,50 @@
     return service;
 
     function Logged(token){
-      return $http.get('http://localhost:8000/users/me/' )
+      return $http.get($rootScope.backend + '/users/me/' )
         .then(dummyCallback, dummyCallback);
     }
 
     function DeleteNotif(id){
-      return $http.delete('http://localhost:8000/users/me/notif/' + id + '/' )
+      return $http.delete($rootScope.backend + '/users/me/notif/' + id + '/' )
         .then(dummyCallback, dummyCallback);
     }
 
     function AddFollower(usernameF){
         var data= { 'follower' : usernameF };
-        return $http.post('http://localhost:8000/users/me/follower/', data);
+        return $http.post($rootScope.backend + '/users/me/follower/', data);
     }
 
     function DelFollower(usernameF){
         var data= { 'follower' : usernameF };
-        return $http.post('http://localhost:8000/users/me/follower/delete/', data);
+        return $http.post($rootScope.backend + '/users/me/follower/delete/', data);
     }
 
 
     function Create(user) {
-      return $http.post('http://localhost:8000/users/register/', user)
+      return $http.post($rootScope.backend + '/users/register/', user)
         .then(
           function successCallback(response) {
             SetCredentials(response);
             return { success: true };
           },
           function errorCallback(response) {
-            console.log(response);
-            var errorMessage = '<ul>';
-            if (response.data.username){
-              errorMessage += "<li> " + response.data.username + "</li>";
-            }
+            // console.log(response);
+            // var errorMessage = '<ul>';
+            // if (response.data.username){
+              // errorMessage += "<li> " + response.data.username + "</li>";
+            // }
 
-            if (response.data.password){
-              errorMessage += "<li> " + response.data.password + "</li>";
-            }
+            // if (response.data.password){
+              // errorMessage += "<li> " + response.data.password + "</li>";
+            // }
 
-            if (response.data.email){
-              errorMessage += "<li> " + response.data.email + "</li>";
-            }
-            errorMessage += '</ul>';
-            return { success: false, message: errorMessage };
+            // if (response.data.email){
+              // errorMessage += "<li> " + response.data.email + "</li>";
+            // }
+            // errorMessage += '</ul>';
+            // return { success: false, message: errorMessage };
+            return { success: false, message: response.data };
           });
     }
 
@@ -94,7 +95,7 @@
       $http.defaults.headers.common.Authorization = 'Basic ' +
         Base64.encode(username + ':' + password);
 
-      $http.get('http://localhost:8000/users/login/' )
+      $http.get($rootScope.backend + '/users/login/' )
         .then(function successCallback(response) {
           callback(response);
         }, function errorCallback(response) {

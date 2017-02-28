@@ -1,11 +1,22 @@
-﻿<h1>Hi {{vm.user}}!</h1>
-<p>You're logged in!!</p>
+﻿<div uib-alert ng-repeat="alert in vm.notif"
+  ng-class="'alert-' + (alert.class || 'warning')"
+  close="vm.deleteNotif(alert.id_cache)">
+  <strong> <b>{{alert.type}}:</b> </strong> {{alert.message}}
+
+  <button type="button" ng-show="alert.type == 'Follower'"
+    class="btn btn-default btn-sm pull-right" ng-click="vm.open('sm', alert)">Follow back
+  </button>
+
+</div>
+
+<h1>Hi {{vm.user}}!</h1>
+<!-- <p>You're logged in!!</p> -->
 
 <a href="#!/playsolo" class="btn btn-default btn-lg btn-block">Play Solo</a>
 
 <form name="form" role="form">
   <div class="form-group">
-    <h5 class="control-label">Follower</h5>
+    <h5 class="control-label">Follow</h5>
     <div class="input-group">
       <span class="input-group-addon">User: </span>
       <input type="text" class="form-control" ng-model="vm.follower" required>
@@ -17,26 +28,6 @@
     </div>
   </div>
 </form>
-
-<h5 ng-if="vm.notif.length > 0">All notification :</h5>
-<ul>
-  <div ng-repeat="notif in vm.notif">
-    <div class="{{notif.class}}" >
-      <div class="panel-heading">
-        <h3 class="panel-title">
-          {{notif.type}}
-          <a class="pull-right" ng-click="vm.deleteNotif(notif.id_cache)">Delete</a></h3>
-      </div>
-      <div class="panel-body">
-        {{notif.message}}
-        <button type="button" ng-show="notif.type == 'Follower'"
-          class="btn btn-default btn-sm pull-right" ng-click="vm.open('sm', notif)">Follow back</button>
-      </div>
-    </div>
-  </div>
-
-
-</ul>
 
 <script type="text/ng-template" id="addFollowerModal.html">
   <div class="modal-header">
@@ -60,7 +51,7 @@
             {{vm.msgError}}
           </div>
         </div>
-        </div>
+      </div>
 
     </div>
   </div>
@@ -68,6 +59,23 @@
   <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="vm.ok()">Follow</button>
     <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Close</button>
+  </div>
+</script>
+
+<script type="text/ng-template" id="customPopupTemplate.html">
+  <div class="custom-popup-wrapper"
+     ng-style="{top: position().top+'px', left: position().left+'px'}"
+     style="display: block;"
+     ng-show="isOpen() && !moveInProgress"
+     aria-hidden="{{!isOpen()}}">
+    <p class="message">select location from drop down.</p>
+
+    <ul class="dropdown-menu" role="listbox">
+      <li class="uib-typeahead-match" ng-repeat="match in matches track by $index" ng-class="{active: isActive($index) }"
+        ng-mouseenter="selectActive($index)" ng-click="selectMatch($index)" role="option" id="{{::match.id}}">
+        <div uib-typeahead-match index="$index" match="match" query="query" template-url="templateUrl"></div>
+      </li>
+    </ul>
   </div>
 </script>
 

@@ -34,6 +34,37 @@
 
 
 
+  <script type="text/ng-template" id="howFollowerBoard.html">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-title">Board of {{vm.row.name}}</h3>
+    </div>
+
+    <div class="modal-body" id="modal-body">
+
+      <div class="col-md-10 col-md-offset-2">
+
+        <table>
+          <tbody>
+            <tr ng-repeat="(i, row) in vm.game track by $index">
+              <td ng-repeat="(j, cell) in row track by $index">
+                <a hiref="#" class="btn btn-sq " ng-click="vm.place(i, j)"
+                  ng-class="(i == j || i + j == 4) ? 'btn-warning' : 'btn-default'" >
+                  {{cell}}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-danger" type="button" ng-click="vm.cancel()">Close</button>
+    </div>
+  </script>
+
+
   <div ng-show='vm.score != null'>
     <h3 class="text-center">
       Score : {{vm.score}}
@@ -68,7 +99,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="(i, row) in vm.followers_best track by $index">
+          <tr ng-repeat="(i, row) in vm.followers_best track by $index" ng-click="vm.open('lg', row)">
             <td>{{i+1}}</td>
             <td>{{row.name}}</td>
             <td>{{row.score}}</td>
