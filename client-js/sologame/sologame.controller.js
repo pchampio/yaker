@@ -6,17 +6,29 @@
     .controller('SoloGameController', SoloGameController);
 
   SoloGameController.$inject = ['$location', 'UserService',
-                                'FlashService', '$rootScope',
-                                '$route', '$uibModal', '$document'];
+    'FlashService', '$rootScope',
+    '$route', '$uibModal', '$document', '$window'];
   function SoloGameController($location, UserService,
-                              FlashService, $rootScope,
-                              $route, $uibModal, $document) {
+    FlashService, $rootScope,
+    $route, $uibModal, $document, $window) {
     var vm = this;
 
     vm.place = place;
     vm.reload = reload;
     vm.game = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
     vm.open = open;
+    vm.lineHeight = 50;
+
+    var appWindow = angular.element($window);
+
+    angular.element(document).ready(function () {
+      vm.lineHeight = ($('.cell').width());
+    });
+
+    appWindow.bind('resize', function () {
+      vm.lineHeight = ($('.cell').width());
+      $rootScope.$apply()
+    });
 
 
     function place(i,j){

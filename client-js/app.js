@@ -11,25 +11,25 @@
         $routeProvider
             .when('/', {
                 controller: 'HomeController',
-                templateUrl: '/yaker-client-angularJs/home/home.view.html',
+                templateUrl: 'home/home.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/login', {
                 controller: 'LoginController',
-                templateUrl: '/yaker-client-angularJs/login/login.view.html',
+                templateUrl: 'login/login.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/register', {
                 controller: 'RegisterController',
-                templateUrl: '/yaker-client-angularJs/register/register.view.html',
+                templateUrl: 'register/register.view.html',
                 controllerAs: 'vm'
             })
 
             .when('/playsolo', {
                 controller: 'SoloGameController',
-                templateUrl: '/yaker-client-angularJs/sologame/sologame.view.html',
+                templateUrl: 'sologame/sologame.view.html',
                 controllerAs: 'vm'
             })
 

@@ -1,0 +1,50 @@
+﻿.table-game {
+  width: 100%;
+}
+.table-game td {
+  width: 20%;
+  position: relative;
+}
+.table-game td:after {
+  content: '';
+  display: block;
+  margin-top: 100%;
+}
+
+.table-game td .cell {
+  cursor: pointer;
+  touch-action: manipulation;
+  text-transform: uppercase;
+  border: none;
+  -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  transition: all 0.4s;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 50px;
+}
+
+.roll-dice {
+  width: 100%;
+  margin: 0 auto;
+  outline: none;
+  background-color: transparent;
+  color: #ff9800;
+  padding: 0.25em;
+
+}
+.roll-dice h3 {
+  color: #ff9800;
+  display: inline-table;
+}
+.roll-dice svg {
+  fill: #ff9800;
+  display: inline-table;
+  height: 3em;
+}

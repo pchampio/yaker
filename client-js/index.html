@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Yaker Game!</title>
+    <link rel="stylesheet" href="dist/bootstrap.paper.min.css" />
+    <link href="app-content/app.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="jumbotron">
+      <div class="container">
+        <div class="col-sm-8 col-sm-offset-2">
+          <div class="text-center" ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success',
+            'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind-html="flash.message | to_trusted"></div>
+          <div ng-view></div>
+        </div>
+      </div>
+    </div>
+    <div class="credits text-center">
+      <!-- <a href="https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md" target="_blank">AngularJS: John Papa's style guide</a> -->
+      <p>Made with <s>love</s> a keyboard</p>
+      <p>
+        <a href="https://git.drakirus.xyz/Drakirus/yaker">Yaker Game</a>
+        <br />
+        <a href="https://github.com/Drakirus/">By Drakirus</a>
+      </p>
+    </div>
+
+
+    <script src="dist/jquery.min.js"></script>
+
+    <script src="dist/angular.min.js"></script>
+    <script src="dist/angular-route.min.js"></script>
+    <script src="dist/angular-cookies.min.js"></script>
+
+    <script src="dist/angular-animate.min.js"></script>
+    <script src="dist/angular-sanitize.min.js"></script>
+    <script src="dist/ui_bootstrap_tpls_2.5.0.min.js"></script>
+
+    <script src="app.js"></script>
+
+    <script src="app-services/flash.service.js"></script>
+    <script src="app-services/user.service.js"></script>
+
+    <script src="home/home.controller.js"></script>
+    <script src="login/login.controller.js"></script>
+    <script src="register/register.controller.js"></script>
+    <script src="sologame/sologame.controller.js"></script>
+
+    <script src="sologame/controller/howFollowerBoard.js"></script>
+    <script src="home/controller/addFollowerCtrl.js"></script>
+
+  </body>
+</html>
