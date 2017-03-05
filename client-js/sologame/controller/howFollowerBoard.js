@@ -14,7 +14,7 @@
 
 
       angular.element(document).ready(function () {
-        $ctrl.lineHeight = ($('.cell').width());
+        $ctrl.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
       });
 
       $ctrl.cancel = function() {

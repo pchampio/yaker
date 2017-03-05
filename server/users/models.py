@@ -9,14 +9,11 @@ class Followership(models.Model):
     """
         followers table
     """
-    user = models.ForeignKey(User, related_name="Followership_user")
-    follower = models.ForeignKey(User, related_name="Followership_follower")
+    users = models.ManyToManyField(User)
+    accepted = models.BooleanField(default=False)
 
     def __str__(self):
-        return "user: " + self.user.username + "___following : " + self.follower.username
-
-    class Meta:
-        unique_together = (("user", "follower"),)
+        return "__Status: " + str(self.accepted)
 
     @classmethod
     def getFollowers(cls, user):

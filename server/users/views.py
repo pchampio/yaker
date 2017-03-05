@@ -68,7 +68,7 @@ class FollowershipVue(APIView):
             follower = serializer.save()
             if follower:
                 detail_follower = serializer.data['follower']
-                return Response({'detail': detail_follower + " is now folloing you"},
+                return Response({'detail': detail_follower + " is followered"},
                                 status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -7,10 +7,10 @@
 
   SoloGameController.$inject = ['$location', 'UserService',
     'FlashService', '$rootScope',
-    '$route', '$uibModal', '$document', '$window'];
+    '$route', '$uibModal', '$document', '$window', '$timeout'];
   function SoloGameController($location, UserService,
     FlashService, $rootScope,
-    $route, $uibModal, $document, $window) {
+    $route, $uibModal, $document, $window, $timeout) {
     var vm = this;
 
     vm.place = place;
@@ -22,12 +22,14 @@
     var appWindow = angular.element($window);
 
     angular.element(document).ready(function () {
-      vm.lineHeight = ($('.cell').width());
+      vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
     });
 
     appWindow.bind('resize', function () {
-      vm.lineHeight = ($('.cell').width());
-      $rootScope.$apply()
+      var oldLineHeight = vm.lineHeight;
+      vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
+      if (vm.lineHeight != oldLineHeight)
+        $rootScope.$apply()
     });
 
 
@@ -42,8 +44,10 @@
     }
 
     var token = $rootScope.globals.currentUser.token;
+    var svg = angular.element(document.querySelector('#svg'));
+    var newGame = true;
 
-    var socket = new WebSocket("ws://" + $rootScope.backendWs + "/playsolo/?token=" + token);
+    var socket = new WebSocket($rootScope.backendWs + "/playsolo/?token=" + token);
     socket.onmessage = function(e) {
 
       var response = JSON.parse(e.data)
@@ -55,9 +59,10 @@
       // "board": [[6, 10, 7, 9, 9], [9, 6, 10, 7, 8], [10, 9, 9, 10, 4],
       // [6, 10, 8, 5, 8], [3, 4, 11, 10, 9]]}]}`)
 
-      console.log(response);
+      // console.log(response);
 
       // fin de la game
+
       if (response.score) {
         vm.dice = null;
         vm.game = response.board;
@@ -68,6 +73,16 @@
         // game normale
         vm.game = response.board;
         vm.dice = response.dice;
+        if (response.error) {
+          if (newGame == false){
+            svg.addClass('shake');
+
+            $timeout(function(){
+              svg.removeClass('shake');
+            }, 500);
+          }
+          newGame = false;
+        }
       }
       // event doit trigger dom reload
       $rootScope.$apply()
