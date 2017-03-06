@@ -72,32 +72,23 @@ class FollowershipSerializer(serializers.ModelSerializer):
         Check if the followership DoesNotExist
         """
 
-        user_id= self.validated_data['user']
-        follower_name = self.validated_data['follower']
+        user= User.objects.get(id=self.validated_data['user'])
+        follower = User.objects.get(username=self.validated_data['follower'])
 
+        follower_model = Followership(user=user, follower=follower)
 
         try:
-
-            follower_model = Followership()
             follower_model.save()
-            #  http://stackoverflow.com/a/6996358
-            follower_model.users.add(
-                user_id,
-                User.objects.get(username=follower_name).id
-            )
-
-            userName =  str(follower_model.users.get(id=user_id))
-            followerId = follower_model.users.get(username=follower_name)
 
             new = {
                 'type':'Follower',
-                'message': userName + " is following you",
-                'related': [userName],
+                'message': user.username + " is following you",
+                'related': [user.username],
             }
-            cache_w_add("user", followerId, "notif", new, WEEK_IN_SEC * 2)
+            cache_w_add("user", follower.id, "notif", new, WEEK_IN_SEC * 2)
 
-        except Exception as e:
-            logger.error("fail adding user to database or cache" + e)
+        except :
+            logger.error("fail adding user to database or cache")
             return None
         return self
 
@@ -106,17 +97,13 @@ class FollowershipSerializer(serializers.ModelSerializer):
         Check : Follower is a user (diffrent form follower adder), and not already your follower
         """
         try:
-            if (Followership.objects
-                    .filter(users__id=data['user'])
-                    .filter(
-                        users=User.objects.exclude(id=data['user']).get(username=data['follower'])
-                    )
-                    .filter(accepted=True)
-                    .exists()):
-                raise serializers.ValidationError(data['follower'] + " is already followed")
+            follower = User.objects.exclude(id=data['user']).get(username=data['follower'])
+            user = User.objects.get(id=data['user'])
         except User.DoesNotExist:
             raise serializers.ValidationError(data['follower'] + " is not a valid User")
 
+        if Followership.objects.filter(user=user, follower=follower).exists():
+            raise serializers.ValidationError(data['follower'] + " is already followed")
         return data
 
     class Meta:

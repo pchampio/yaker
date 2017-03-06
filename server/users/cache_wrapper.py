@@ -11,7 +11,6 @@ def cache_w_add(relatedTo, id, typeOfInfo, data, ttl):
 
     id_info = cache.incr(num_info)
 
-    data['id_cache'] = id_info
     cache.set(num_info + ":" + str(id_info), data, ttl)
     return num_info
 
@@ -21,6 +20,7 @@ def cache_w_gets(relatedTo, id, typeOfInfo):
     cacheValues = []
     for info in cache.iter_keys(key_all):
         tmp = cache.get(info)
+        tmp['id_cache'] = info[-1]
         cacheValues.append(tmp)
     return cacheValues
 
