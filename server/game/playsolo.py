@@ -14,8 +14,11 @@ logger = logging.getLogger(__name__)
 class GameSolo():
     """ gère le jeux """
 
-    def create(user):
-        key = 'user:'+str(user.id)+':sologame'
+    str_key_cache = ":sologame"
+
+    @classmethod
+    def create(cls, user):
+        key = 'user:'+str(user.id) + cls.str_key_cache
         if key in cache:
             logger.debug("User " + user.username + " has restart cache saved game")
         else:
@@ -82,7 +85,8 @@ class GameSolo():
 
 
 
-    def user_input(content, user_id):
+    @classmethod
+    def user_input(cls,content, user_id):
         """
         check if user is malicious (or just curious) and give next value of board
         return dict and if ws should close or not
@@ -90,7 +94,7 @@ class GameSolo():
 
         jsonDec = json.decoder.JSONDecoder()
 
-        key = 'user:'+user_id+':sologame'
+        key = 'user:'+str(user_id) + cls.str_key_cache
         game = cache.get(key)
         board = jsonDec.decode(game['game_set'])
 
@@ -104,11 +108,11 @@ class GameSolo():
                     if game['user_board'][i][j] == 0:
                         game['user_board'][i][j] = board[game['index_set']]
                         game['index_set'] += 1
-                        cache.set(key, game, 604800 * 2) # 2 week
+                        cache.set(key, game, 604800 * 1) # 1 week
 
                         # save the game
                         if game['index_set'] > 24:
-                            end = GameSolo.save(game,user_id)
+                            end = cls.save(game,user_id)
                             cache.delete(key)
                             return end,True # close ws
 

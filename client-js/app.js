@@ -33,6 +33,12 @@
         controllerAs: 'vm'
       })
 
+      .when('/multi', {
+        controller: 'MultiController',
+        templateUrl: 'multi/multi.view.html',
+        controllerAs: 'vm'
+      })
+
       .otherwise({ redirectTo: '/login' });
   }
 

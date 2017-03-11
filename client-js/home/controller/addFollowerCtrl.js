@@ -15,7 +15,7 @@
         UserService.AddFollower($ctrl.user)
           .then(function successCallback(response) {
             $ctrl.dataLoading = false;
-            FlashService.Success("<strong>" + $ctrl.user + ' is followed</strong>', true);
+            FlashService.Success("<strong><u>" + $ctrl.user + '</u> is followed</strong>', false);
             $uibModalInstance.close($ctrl.notif);
           }, function errorCallback(response) {
             $ctrl.dataLoading = false;

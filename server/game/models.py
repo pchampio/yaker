@@ -48,6 +48,7 @@ class Game(models.Model):
             return gameObj[random.randint(0,gameObj.count()-1)]
 
 
+
 class Save(models.Model):
     """ Save table"""
     user = models.ForeignKey(User, related_name="Save_user")

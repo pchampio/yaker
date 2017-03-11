@@ -28,8 +28,26 @@
   right: 0;
   text-align: center;
   font-size: 50px;
+  -webkit-touch-callout: none;
+  -webkit-user-select:   none;
+  -khtml-user-select:    none;
+  -moz-user-select:      none;
+  -ms-user-select:       none;
+  user-select:           none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 
+@media (max-width: 500px) {
+  .container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+.table-condensed>thead>tr>th,.table-condensed>tbody>tr>th,.table-condensed>tfoot>tr>th,.table-condensed>thead>tr>td,.table-condensed>tbody>tr>td,.table-condensed>tfoot>tr>td {
+    padding-left: 0px;
+    padding-right: 0px;
+}
 /* Stolen from */
 /* https://codepen.io/GhostRider/pen/FctLB/ */
 .shake svg {
@@ -81,4 +99,9 @@
   fill: #ff9800;
   display: inline-table;
   height: 3em;
+}
+
+.label-as-badge {
+    border-radius: 1em;
+    font-size: 13px;
 }

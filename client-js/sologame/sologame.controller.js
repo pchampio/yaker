@@ -5,33 +5,92 @@
     .module('app')
     .controller('SoloGameController', SoloGameController);
 
-  SoloGameController.$inject = ['$location', 'UserService',
+  SoloGameController.$inject = ['UserService',
     'FlashService', '$rootScope',
-    '$route', '$uibModal', '$document', '$window', '$timeout'];
-  function SoloGameController($location, UserService,
+    '$route', '$uibModal', '$document', '$window', '$timeout', '$scope'];
+
+  function SoloGameController(UserService,
     FlashService, $rootScope,
-    $route, $uibModal, $document, $window, $timeout) {
+    $route, $uibModal, $document, $window, $timeout, $scope) {
+
     var vm = this;
 
+
+    var token = $rootScope.globals.currentUser.token;
+    var svg = angular.element(document.querySelector('#svg'));
+    var socket = null;
+    var newGame;
+
+    // init the ctrl
+   initCtrl();
+
+    // methods Public
     vm.place = place;
     vm.reload = reload;
-    vm.game = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-    vm.open = open;
-    vm.lineHeight = 50;
 
-    var appWindow = angular.element($window);
 
-    angular.element(document).ready(function () {
-      vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
-    });
+    function initCtrl(){
 
-    appWindow.bind('resize', function () {
-      var oldLineHeight = vm.lineHeight;
-      vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
-      if (vm.lineHeight != oldLineHeight)
-        $rootScope.$apply()
-    });
+      // method protected
+      vm.open = open;
 
+      vm.game = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+      vm.lineHeight = 50;
+
+      enableResizeCell();
+      newGame = true;
+
+      initSocket();
+    }
+
+    function initSocket(){
+      socket = new WebSocket($rootScope.backendWs + "/playsolo/?token=" + token);
+      socket.onmessage = function(e) {
+        var response = JSON.parse(e.data);
+
+        // var response = JSON.parse(`{"score": 24, "board": [[9, 8, 4, 8, 9],
+        // [11, 9, 10, 9, 10], [8, 9, 6, 7, 5], [7, 10, 9, 10, 6], [6, 10, 10, 4, 3]],
+        // "world_first": [{"name": "drakirus", "score": 31}, {"name": "test", "score": 24}],
+        // "followers_best": [{"name": "drakirus", "score": 31,
+        // "board": [[6, 10, 7, 9, 9], [9, 6, 10, 7, 8], [10, 9, 9, 10, 4],
+        // [6, 10, 8, 5, 8], [3, 4, 11, 10, 9]]}]}`)
+
+        responseGestion(response);
+
+        // event doit trigger dom reload
+        $rootScope.$apply();
+      }
+
+      // socket init
+      socket.onopen = function() {
+        socket.send(JSON.stringify({
+          i:'init'
+        }));
+      }
+      if (socket.readyState == WebSocket.OPEN) socket.onopen();
+    }
+
+    function enableResizeCell(){
+      var appWindow = angular.element($window);
+
+      angular.element(document).ready(function () {
+        vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
+      });
+
+      appWindow.bind('resize', resize);
+
+      function resize() {
+        var oldLineHeight = vm.lineHeight;
+        vm.lineHeight = (angular.element(document.querySelector('.cell'))[0].clientWidth);
+        if (vm.lineHeight != oldLineHeight)
+          $rootScope.$apply()
+      }
+
+      $scope.$on('$destroy', function(e) {
+        appWindow.unbind('resize', resize);
+      });
+
+    }
 
     function place(i,j){
       socket.send(JSON.stringify({
@@ -43,26 +102,7 @@
       $route.reload();
     }
 
-    var token = $rootScope.globals.currentUser.token;
-    var svg = angular.element(document.querySelector('#svg'));
-    var newGame = true;
-
-    var socket = new WebSocket($rootScope.backendWs + "/playsolo/?token=" + token);
-    socket.onmessage = function(e) {
-
-      var response = JSON.parse(e.data)
-
-      // var response = JSON.parse(`{"score": 24, "board": [[9, 8, 4, 8, 9],
-      // [11, 9, 10, 9, 10], [8, 9, 6, 7, 5], [7, 10, 9, 10, 6], [6, 10, 10, 4, 3]],
-      // "world_first": [{"name": "drakirus", "score": 31}, {"name": "test", "score": 24}],
-      // "followers_best": [{"name": "drakirus", "score": 31,
-      // "board": [[6, 10, 7, 9, 9], [9, 6, 10, 7, 8], [10, 9, 9, 10, 4],
-      // [6, 10, 8, 5, 8], [3, 4, 11, 10, 9]]}]}`)
-
-      // console.log(response);
-
-      // fin de la game
-
+    function responseGestion(response){
       if (response.score) {
         vm.dice = null;
         vm.game = response.board;
@@ -76,7 +116,6 @@
         if (response.error) {
           if (newGame == false){
             svg.addClass('shake');
-
             $timeout(function(){
               svg.removeClass('shake');
             }, 500);
@@ -84,19 +123,7 @@
           newGame = false;
         }
       }
-      // event doit trigger dom reload
-      $rootScope.$apply()
-
     }
-    socket.onopen = function() {
-
-      socket.send(JSON.stringify({
-        i:'init'
-      }));
-
-    }
-    // Call onopen directly if socket is already open
-    if (socket.readyState == WebSocket.OPEN) socket.onopen();
 
     function open(size, row, parentSelector){
       var parentElem = parentSelector ?
@@ -122,7 +149,7 @@
       }, function() {
         console.log('Modal dismissed at: ' + new Date());
       });
-    };
+    }; // end modal
 
   }
 

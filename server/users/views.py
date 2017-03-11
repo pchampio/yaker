@@ -120,6 +120,7 @@ class AuthUser(APIView):
     def get(self, request, format=None):
         response = {'username': request.user.username}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
+        response['userID'] = request.user.id
 
         return Response(response,status=status.HTTP_200_OK)
 

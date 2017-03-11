@@ -50,23 +50,9 @@
             return { success: true };
           },
           function errorCallback(response) {
-            // console.log(response);
-            // var errorMessage = '<ul>';
-            // if (response.data.username){
-              // errorMessage += "<li> " + response.data.username + "</li>";
-            // }
-
-            // if (response.data.password){
-              // errorMessage += "<li> " + response.data.password + "</li>";
-            // }
-
-            // if (response.data.email){
-              // errorMessage += "<li> " + response.data.email + "</li>";
-            // }
-            // errorMessage += '</ul>';
-            // return { success: false, message: errorMessage };
             return { success: false, message: response.data };
-          });
+          }
+        );
     }
 
     function ClearCredentials(){

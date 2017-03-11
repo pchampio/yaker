@@ -3,7 +3,6 @@
 
   angular
     .module('app')
-    .directive('customSubmit', customSubmit)
     .controller('HomeController', HomeController);
 
   HomeController.$inject = ['UserService', 'FlashService', '$rootScope', '$uibModal', '$document'];
@@ -29,6 +28,11 @@
         .then(function (res) {
           vm.user = res.data.username;
           vm.notif = res.data.notif;
+          $rootScope.userID = res.data.userID;
+
+          if (!vm.notif) {
+            return;
+          }
           for (var i = 0; i < vm.notif.length; i++) {
             if (vm.notif[i].type == 'Follower'){
               vm.notif[i]["class"] = "info"
@@ -103,25 +107,6 @@
       });
     };
 
-  }
-
-  function customSubmit(){
-    return {
-      require: '^form',
-      scope: {
-        fire: '&'
-      },
-      link: function(scope, element, attrs, form) {
-        element.on('click', function(e) {
-          scope.$apply(function() {
-            form.$submitted = true;
-            if (form.$valid) {
-              scope.fire()
-            }
-          });
-        });
-      }
-    };
   }
 
 })();

@@ -10,7 +10,7 @@
   <body>
     <div class="jumbotron">
       <div class="container">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-sm-8 col-sm-offset-2 col-xs-12">
           <div class="text-center" ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success',
             'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind-html="flash.message | to_trusted"></div>
           <div ng-view></div>
@@ -41,10 +41,13 @@
     <script src="app-services/flash.service.js"></script>
     <script src="app-services/user.service.js"></script>
 
+    <script src="app-directive/customSubmit.directive.js"></script>
+
     <script src="home/home.controller.js"></script>
     <script src="login/login.controller.js"></script>
     <script src="register/register.controller.js"></script>
     <script src="sologame/sologame.controller.js"></script>
+    <script src="multi/multi.controller.js"></script>
 
     <script src="sologame/controller/howFollowerBoard.js"></script>
     <script src="home/controller/addFollowerCtrl.js"></script>

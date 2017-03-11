@@ -27,8 +27,8 @@ class ConsumerSolo(JsonWebsocketConsumer):
         """Perform a game create on connection start"""
 
         GameSolo.create(message.user)
-        message.channel_session['user'] = str(message.user.id)
-        message.channel_session['username'] = str(message.user.username)
+        message.channel_session["user"] = str(message.user.id)
+        message.channel_session["username"] = str(message.user.username)
 
         # Accept connection
         message.reply_channel.send({"accept": True})
@@ -36,11 +36,11 @@ class ConsumerSolo(JsonWebsocketConsumer):
     def raw_receive(self, message, **kwargsself):
         """Called when a WebSocket frame is received."""
         try:
-            self.receive(json.loads(message['text']), message.channel_session['user'])
+            self.receive(json.loads(message["text"]), message.channel_session["user"])
         except:
-            logger.error("User " + message.channel_session['username'] +
-                    ": Error parsing incoming json WebSocket:\nJson:\t" + message['text'])
-            self.receive({}, message.channel_session['user'])
+            logger.error("User " + message.channel_session["username"] +
+                    ": Error :\nJson:\t" + message["text"])
+            self.receive({}, message.channel_session["user"])
 
     def receive(self, content, user_id):
         """ GameSolo do the work """
@@ -64,73 +64,64 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
     def connect(self, message, **kwargs):
         """Perform a game create on connection start"""
 
-        message.channel_session['user'] = str(message.user.id)
-        message.channel_session['username'] = str(message.user.username)
+        message.channel_session["user"] = str(message.user.id)
+        message.channel_session["username"] = str(message.user.username)
 
+        # get room name
         try:
             if "method" not in message.content:
-                message.content['method'] = "FAKE"
+                message.content["method"] = "FAKE"
             request = AsgiRequest(message)
 
         except Exception as e:
             raise ValueError("Cannot parse HTTP message - are you sure this is a HTTP consumer? %s" % e)
 
-        room = request.GET.get("room", None)
+        room = request.GET.get("room")
 
-        message.channel_session['room'] = room
+        message.channel_session["room"] = room
 
-        lobbyMsg = GameMultiLobby.newLobby(message.user,room)
+        lobbyMsg = GameMultiLobby.newConsumerLobby(message.user,room)
 
         # Accept connection
         message.reply_channel.send({"accept": True})
 
         Group(room).add(message.reply_channel)
-        if 'user' in lobbyMsg:
-            self.send(lobbyMsg['user'])
 
-        if 'group' in lobbyMsg:
-            Group(room).send({"text": lobbyMsg['group']})
-
-        if 'user_close' in lobbyMsg:
-            self.close()
+        group_user_send(self, message.channel_session["room"], lobbyMsg)
 
     def raw_receive(self, message, **kwargsself):
         """Called when a WebSocket frame is received."""
-        try:
-            self.receive(json.loads(message['text']), message.channel_session)
-        except:
-            self.receive({}, message.channel_session)
-            logger.error("User " + message.channel_session['username'] +
-                    ": Error parsing incoming json WebSocket:\nJson:\t" + message['text'])
+        self.receive(json.loads(message["text"]), message.channel_session)
+        #  try:
+        #  except:
+            #  self.receive({}, message.channel_session)
+            #  logger.error("User " + message.channel_session["username"] +
+                    #  ": Error parsing incoming json WebSocket:\nJson:\t" + message["text"])
 
     def receive(self, content, channel_session):
         """ GameMultiLobby do the work """
         return_value = GameMultiLobby.user_input(content, channel_session)
 
-        if 'user' in return_value:
-            self.send(return_value['user'])
-
-        if 'group' in return_value:
-            Group(channel_session['room']).send({"text": return_value['group']})
-
-        if 'group_close' in return_value:
-            Group(channel_session['room']).send({"close":True})
-
-        if 'user_close' in return_value:
-            self.close()
+        group_user_send(self, channel_session["room"], return_value)
 
     def raw_disconnect(self, message, **kwargs):
-
-        Group(message.channel_session['room']).discard(message.reply_channel)
-
         return_value = GameMultiLobby.user_input({"leave":"1"}, message.channel_session)
 
-        if 'user' in return_value:
-            self.send(return_value['user'])
+        group_user_send(self, message.channel_session["room"], return_value)
 
-        if 'group' in return_value:
-            Group(message.channel_session['room']).send({"text": return_value['group']})
+        Group(message.channel_session["room"]).discard(message.reply_channel)
 
-        if 'group_close' in return_value:
-            Group(message.channel_session['room']).send({"close":True})
+def group_user_send(user_chan, group_chan, data):
+    """ gestion des sockets """
+    if "user" in data:
+        user_chan.send(data["user"])
 
+    if "group" in data:
+        #  Group(group_chan).send({"text": data["group"]})
+        JsonWebsocketConsumer.group_send(group_chan,data["group"])
+
+    if "group_close" in data and data["group_close"] == True:
+        Group(group_chan).send({"close":True})
+
+    if "user_close" in data and data["user_close"] == True:
+        user_chan.close()
