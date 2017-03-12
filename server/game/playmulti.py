@@ -54,12 +54,12 @@ class GameMultiLobby():
             if not loggedInLobby:
                 game["players"].append(new_user)
                 cache.set(key,game,60*10)
-            logger.debug("User " + user.username + " has join a lobby : "+room)
+            logger.info("User " + user.username + " has join a lobby : "+room)
 
         else:
             game = {"op": user.id, "players":[{"name":user.username,"id":user.id}],"ban":[]}
             cache.set(key,game , 60 * 2)
-            logger.debug("User " + user.username + " has start a new lobby : "+room)
+            logger.info("User " + user.username + " has start a new lobby : "+room)
 
         return {"group":game}
 

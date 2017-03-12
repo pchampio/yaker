@@ -177,7 +177,7 @@
 
     function itemTracker(item){
       if (gameEnd) {
-        return 120-item.score; // desc
+        return 220-item.score; // desc
       }
       return item.id;
     }

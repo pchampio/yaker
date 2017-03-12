@@ -41,7 +41,7 @@ class Game(models.Model):
         )
         if gameObj.count() == 0:
             #  new set
-            logger.debug("Create new game set (" + user.username + " has complete all exists one)")
+            logger.info("Create new game set (" + user.username + " has complete all exists one)")
             return Game.objects.create()
         else:
             # get existing one

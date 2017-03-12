@@ -24,10 +24,10 @@ class GameSolo():
     def create(cls, user):
         key = 'user:'+str(user.id) + cls.str_key_cache
         if key in cache:
-            logger.debug("User " + user.username + " has restart cache saved game")
+            logger.info("User " + user.username + " has restart cache saved game")
         else:
             gameSession = Game.get_or_create(user)
-            logger.debug("User " + user.username + " has start a new game id : "
+            logger.info("User " + user.username + " has start a new game id : "
                     + str(gameSession.id) )
             sologame = {}
             sologame['game_id'] = gameSession.id
@@ -75,7 +75,7 @@ class GameSolo():
                         }
                     )
 
-        logger.debug("User " + user.username + " has complete lvl " +
+        logger.info("User " + user.username + " has complete lvl " +
                 str(game['game_id']) + " score : " + str(score))
         return({
             "score": score,
@@ -99,7 +99,7 @@ class GameSolo():
         game = cache.get(key)
         board = jsonDec.decode(game['game_set'])
 
-        #  logger.debug(game)
+        #  logger.info(game)
 
         if "i" in content and 'j' in content:
             i = content['i']
