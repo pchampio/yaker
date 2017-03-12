@@ -25,6 +25,7 @@
     vm.startGame = startGame;
     vm.place = place;
     vm.itemTracker = itemTracker;
+    vm.isAdmin = isAdmin;
 
     vm.userID = $rootScope.globals.currentUser.user_id;
 
@@ -180,6 +181,10 @@
         return 220-item.score; // desc
       }
       return item.id;
+    }
+
+    function isAdmin() {
+      return vm.lobbyInfo && vm.lobbyInfo.op === vm.userID
     }
 
     // Private

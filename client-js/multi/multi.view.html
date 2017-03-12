@@ -46,7 +46,7 @@
           <span ng-show="user.id === vm.lobbyInfo.op"><b> (Admin)</b></span>
           &ensp;
           <a class="btn btn-warning btn-xs" ng-click="vm.banUser(user.id)"
-            ng-show="vm.lobbyInfo.op === vm.userID && vm.lobbyInfo.op != user.id && !user.score">
+            ng-show="vm.isAdmin() && user.id != vm.lobbyInfo.op && !user.score">
             Ban
           </a>
         </td>
@@ -61,7 +61,7 @@
 </div>
 
 <!-- Start the game -->
-<div class="btn-group btn-group-justified" ng-show="vm.lobbyInfo && vm.userID == vm.lobbyInfo.op && vm.gamestart == false">
+<div class="btn-group btn-group-justified" ng-show="vm.isAdmin() && (!vm.gamestart)">
   <a class="btn btn-success" ng-click="vm.startGame()">Start</a>
 </div>
 
