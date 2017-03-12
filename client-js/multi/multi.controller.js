@@ -85,6 +85,7 @@
         // on error
         if (response.error && vm.nbBoardSeen != 1) {
           FlashService.Error('<strong><u>Error:</u> '+ response.error + '</strong>',false);
+          $window.scrollTo(0, 0);
           if (vm.gamestart == false) {
             resetLobby();
             return;
@@ -122,19 +123,20 @@
         // socre all users
         if (response.score) {
           var nb_players_end = 0;
+
           for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
             if (response.user_id == vm.lobbyInfo.players[i]["id"]) {
               vm.lobbyInfo.players[i].score = response.score;
             }
             if (vm.lobbyInfo.players[i].score) {
               nb_players_end += 1;
+              vm.lobbyInfo.players[i].played = 1; // change status to none
             }
           }
+
+          // End game
           if (nb_players_end >= vm.lobbyInfo.players.length) {
             gameEnd = true;
-            for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
-              vm.lobbyInfo.players[i].played = 1; // change color
-            }
           }
         }
 

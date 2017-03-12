@@ -61,7 +61,7 @@
 </div>
 
 <!-- Start the game -->
-<div class="btn-group btn-group-justified" ng-show="vm.userID == vm.lobbyInfo.op && vm.gamestart == false">
+<div class="btn-group btn-group-justified" ng-show="vm.lobbyInfo && vm.userID == vm.lobbyInfo.op && vm.gamestart == false">
   <a class="btn btn-success" ng-click="vm.startGame()">Start</a>
 </div>
 
