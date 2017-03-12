@@ -1,4 +1,4 @@
-﻿<div uib-alert ng-repeat="alert in vm.notif"
+﻿<div uib-alert ng-repeat="alert in vm.notif track by $index"
   ng-class="'alert-' + (alert.class || 'warning')"
   close="vm.deleteNotif(alert.id_cache)">
   <strong> <b>{{alert.type}}:</b> </strong> {{alert.message}}

@@ -5,11 +5,16 @@
     .module('app')
     .controller('MultiController', MultiController);
 
-  MultiController.$inject = ['FlashService', '$rootScope', '$http', '$scope', '$location', '$controller', '$window'];
+  MultiController.$inject =
+    ['FlashService', '$rootScope',   '$http',    '$scope',
+      '$location',   '$controller', '$window', '$timeout', '$route'];
 
   MultiController.prototype = Object.create (MultiController.prototype);
 
-  function MultiController(FlashService, $rootScope, $http, $scope, $location, $controller, $window) {
+  function MultiController(
+    FlashService, $rootScope, $http, $scope,
+     $location,   $controller, $window , $timeout, $route
+  ) {
 
     var vm = this;
 
@@ -20,6 +25,7 @@
     vm.banUser = banUser;
     vm.startGame = startGame;
     vm.place = place;
+    vm.itemTracker = itemTracker;
 
     if ($rootScope.userID == null) {
       $location.path('/');
@@ -49,23 +55,24 @@
 
     vm.nbBoardSeen = 0; // do not display first error when game start up
     vm.dice = null;
+    var gameEnd = false;
     function joinLobby() {
 
       socket = new WebSocket($rootScope.backendWs + "/playmulti/lobby/?token=" + token + "&room=" + vm.lobbyName);
 
       socket.onmessage = function(e) {
 
-        var response = JSON.parse(e.data.replace(/'/g, '"'));
         var response = JSON.parse(e.data);
 
         FlashService.Clear()
         vm.dataLoading = true;
 
-        if (angular.equals(vm.lobbyInfo, response)) {
+        if (angular.equals(vm.lobbyInfo, response) || gameEnd == true) {
           // more js compute less dom YAY
           return;
         }
 
+        // Init game
         if (response.ingame && vm.gamestart == false) {
           vm.nbBoardSeen = 1
           socket.send(JSON.stringify({
@@ -73,8 +80,12 @@
           }));
           vm.gamestart = true;
 
+          vm.game =  [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+
+          $timeout(enableResizeCell(), 500); // need timeout ;/
         }
 
+        // on error
         if (response.error && vm.nbBoardSeen != 1) {
           FlashService.Error('<strong><u>Error:</u> '+ response.error + '</strong>',false);
           if (vm.gamestart == false) {
@@ -83,32 +94,51 @@
           }
         }
 
+        // on error (user ban)
         if(response.ban && response.ban.indexOf(vm.userID) !== -1){
           FlashService.Error('<strong><u>Error:</u> You are banned from lobby ' + vm.lobbyName +'</strong>',false);
           resetLobby();
           return;
         }
 
+        // info sur les users
         if (response.op) {
           vm.lobbyInfo = response;
         }
+
+        // new dice
         if (response.dice) {
           vm.dice = response.dice;
         }
+
+        // board
+        if (response.board){
+          vm.nbBoardSeen = 2;
+          vm.game = response.board;
+        }
+
+        // score of current user
         if (response.score && response.user_id == vm.userID) {
           vm.score = response.score;
         }
+
+        // socre all users
         if (response.score) {
+          var nb_players_end = 0;
           for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
             if (response.user_id == vm.lobbyInfo.players[i]["id"]) {
               vm.lobbyInfo.players[i].score = response.score;
             }
+            if (vm.lobbyInfo.players[i].score) {
+              nb_players_end += 1;
+            }
           }
-        }
-        if (response.board){
-          vm.nbBoardSeen = 2;
-          vm.game = response.board;
-          enableResizeCell();
+          if (nb_players_end >= vm.lobbyInfo.players.length) {
+            gameEnd = true;
+            for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
+              vm.lobbyInfo.players[i].played = 1; // change color
+            }
+          }
         }
 
         $rootScope.$apply()
@@ -121,9 +151,10 @@
       }
 
       socket.onclose = function (e) {
-        vm.lobbyInfo = null;
-        vm.dataLoading = false;
-        $scope.$apply()
+        if (gameEnd) {
+          return;
+        }
+        resetLobby();
       };
     }
 
@@ -145,6 +176,13 @@
       }));
     }
 
+    function itemTracker(item){
+      if (gameEnd) {
+        return 120-item.score; // desc
+      }
+      return item.id;
+    }
+
     // Private
 
     $scope.$on('$locationChangeStart', function( event ) {
@@ -158,10 +196,7 @@
       if (socket) {
         socket.close();
       }
-      vm.lobbyInfo = null;
-      vm.game = null;
-      vm.dice = null;
-      $scope.$apply()
+      $route.reload();
     }
 
     function enableResizeCell(){

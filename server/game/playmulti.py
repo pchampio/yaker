@@ -22,7 +22,7 @@ class GameMultiLobby():
             game = cache.get(key)
             new_user = {"name":user.username,"id":user.id}
             if new_user in game["players"]:
-                return {"group":(game)}
+                return {"group":game}
 
             if user.id in game["ban"]:
                 return {
@@ -48,7 +48,7 @@ class GameMultiLobby():
             cache.set(key,game , 60 * 2)
             logger.debug("User " + user.username + " has start a new lobby : "+room)
 
-        return {"group":(game)}
+        return {"group":game}
 
     # on consumer message
     def user_input(content, channel_session):
@@ -70,17 +70,24 @@ class GameMultiLobby():
 
         # END INIT
 
+        if user_index == None:
+            return {"user": ({"error" : "Bad request"})}
+
         # CMD leave
         if "leave" in content :
             if int(game["op"]) == user_id:
                 cache.delete(key)
                 return {"group" : ({"error" : "Operator canceled the lobby"}),"group_close":True}
-            elif "ingame" not in game:
-                if user_index is not None:
+            if user_index is not None:
+                if "ingame" not in game:
                     game["players"].pop(user_index)
+                else:
+                    game["players"][user_index]["played"] = -1 # disconnected
+                    return {"group": game}
+
 
                 cache.set(key, game, 60 * 10)
-                return {"group":(game),"user_close":True}
+                return {"group":game,"user_close":True}
 
         # CMD ban
         if "ban" in content:
@@ -100,7 +107,7 @@ class GameMultiLobby():
                     game["ban"].append(ban)
 
                 cache.set(key, game, 60 * 10)
-                return {"group":(game)}
+                return {"group":game}
             else:
                 return {"user": ({"error" : "Bad request"})}
 
@@ -117,12 +124,14 @@ class GameMultiLobby():
             cache.set(key, game, 60 * 10)
             GameManager, end = GameMulti.user_input(content,user_id)
             game["dice"] = GameManager["dice"]
-            return {"group":(game)}
+            return {"group":game}
 
         # CMD d'un user pour jouer
         if "ingame" in game:
             if game["players"][user_index]["played"] == 1:
-                return {"user": {"error": "Waiting for the other users to play !"}}
+                GameManager, end = GameMulti.user_input({} ,user_id) # in case of reconnection
+                GameManager["error"] = "Waiting for the other users to play !"
+                return {"user": GameManager}
 
 
             GameManager, end = GameMulti.user_input(content,user_id)
@@ -131,11 +140,12 @@ class GameMultiLobby():
                 dice = GameManager["dice"]
                 del GameManager["dice"]
 
-            response = {"user": GameManager}
+            response = {"user": GameManager, "group": game}
 
             if "error" not in GameManager:
                 game["players"][user_index]["played"] = 1
                 if end == True:
+                    # send user score to every users
                     response["group"] = {i:GameManager[i] for i in GameManager if i!='board'}
 
                 if all_users_played(game):
@@ -144,7 +154,7 @@ class GameMultiLobby():
                         del game["ingame"]
                     else:
                         # send next dice
-                        response["group"] = {"dice": dice}
+                        response["group"]["dice"] = dice
 
                     # raz next num
                     for i in reversed(range(len(game["players"]))):
@@ -176,7 +186,7 @@ class GameMulti(GameSolo):
         cache.set(key, game, 120)
 
     def save(game, user_id):
-        logger.info(str(user_id) + " end of Multi game")
+        logger.info("User" + str(user_id) + " end of Multi game")
         score = Score(game['user_board'])
         return({
             "user_id": user_id,

@@ -26,7 +26,7 @@ def score_in_row(row):
         pts += 1
     elif row_count.count(1) == 5:
         if max(row) - min(row) == 4:
-            if  is_Sorted(row):
+            if  is_Sorted(row) or is_Sorted(row[::-1]):
                 pts += 12 # suite sorted
             else:
                 pts += 8 # suite
