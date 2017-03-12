@@ -17,6 +17,8 @@
     vm.addFollower = addFollower;
     vm.dellFollower = dellFollower;
 
+    vm.user = $rootScope.globals.currentUser.username;
+
     initController();
 
     function initController() {
@@ -26,9 +28,7 @@
     function loadCurrentUser() {
       UserService.Logged()
         .then(function (res) {
-          vm.user = res.data.username;
           vm.notif = res.data.notif;
-          $rootScope.userID = res.data.userID;
 
           if (!vm.notif) {
             return;

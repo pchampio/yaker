@@ -108,7 +108,7 @@ class Login(APIView):
 
     def get(self, request, format=None):
         token = Token.objects.get(user=request.user)
-        return Response({"token": token.key, "user_id":request.user.id} )
+        return Response({"token": token.key, "user_id":request.user.id, "username":request.user.username})
 
 class AuthUser(APIView):
 
