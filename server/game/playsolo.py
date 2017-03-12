@@ -12,7 +12,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class GameSolo():
-    """ gère le jeux """
+    """
+    Game solo manager
+    input user, saves, game creation
+    Warning it's boring AF
+    """
 
     str_key_cache = ":sologame"
 

@@ -12,8 +12,6 @@ authenticators = [auth() for auth in api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 #  stolen from :
     #  https://github.com/abarto/shared_canvas_channels/blob/master/shared_canvas_channels/shared_canvas/jwt_decorators.py
-    #  https://github.com/abarto/shared_canvas_channels/blob/master/shared_canvas_channels/shared_canvas/jwt_decorators.py
-
     # and https://github.com/django/channels/issues/510 (issue closed 11 days ago sooo lucky)
 
 def rest_auth(func):

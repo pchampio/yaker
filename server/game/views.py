@@ -13,8 +13,6 @@ import logging
 logger = logging.getLogger('django')
 
 class Lobby(APIView):
-    """Delete a follower from a user"""
-
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 

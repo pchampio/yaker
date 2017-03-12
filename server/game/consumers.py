@@ -91,12 +91,12 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
 
     def raw_receive(self, message, **kwargsself):
         """Called when a WebSocket frame is received."""
-        self.receive(json.loads(message["text"]), message.channel_session)
-        #  try:
-        #  except:
-            #  self.receive({}, message.channel_session)
-            #  logger.error("User " + message.channel_session["username"] +
-                    #  ": Error parsing incoming json WebSocket:\nJson:\t" + message["text"])
+        try:
+            self.receive(json.loads(message["text"]), message.channel_session)
+        except:
+            self.receive({}, message.channel_session)
+            logger.error("User " + message.channel_session["username"] +
+                    ": Error parsing incoming json WebSocket:\nJson:\t" + message["text"])
 
     def receive(self, content, channel_session):
         """ GameMultiLobby do the work """

@@ -13,8 +13,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 class GameMultiLobby():
+    """
+    Lobby manager (user input for the game goes thought this)
+    Warning it's boring AF
 
-    # On cunsumer connect
+    Init
+        User just joined a lobby
+    Commands:
+     user_input
+        leave
+        ban (id)
+        startGame
+        user_input using class GameMulti for the game itself (inherit sologame)
+    """
+
+    # On consumer connect
     def newConsumerLobby(user, room):
         key = "lobby:"+room
         game = None
