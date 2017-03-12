@@ -11,6 +11,8 @@ class Followership(models.Model):
     """
     user = models.ForeignKey(User, related_name="Followership_user")
     follower = models.ForeignKey(User, related_name="Followership_follower")
+    # when a user is unFollowing someone set it to false (prevent follower notif spam)
+    isFollowing = models.BooleanField(default=True)
 
     def __str__(self):
         return "user: " + self.user.username + "___following : " + self.follower.username
@@ -21,17 +23,17 @@ class Followership(models.Model):
     @classmethod
     def getFollowers(cls, user):
         """Get array of Users.username that *user* is following"""
-        followers = (cls.objects.filter(user=user))
+        followers = (cls.objects.filter(user=user, isFollowing=True))
         followers_array = [ x.follower.username  for x in followers ]
-        #  followers_array = filter(lambda a: a != user.username,followers_array)
         return followers_array
 
     @classmethod
     def deleteFollower(cls, user, follower):
-        follower = (cls.objects.
-                    get(user=user,
-                        follower=User.objects.get(
-                        username=follower)))
-        follower.delete()
+        follower = cls.objects.get(user=user,
+                        follower=User.objects.get(username=follower),
+                        isFollowing=True
+                                  )
+        follower.isFollowing = False
+        follower.save()
 
 

@@ -108,7 +108,7 @@ class Login(APIView):
 
     def get(self, request, format=None):
         token = Token.objects.get(user=request.user)
-        return Response({"token": token.key} )
+        return Response({"token": token.key, "user_id":request.user.id} )
 
 class AuthUser(APIView):
 
@@ -120,7 +120,6 @@ class AuthUser(APIView):
     def get(self, request, format=None):
         response = {'username': request.user.username}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
-        response['userID'] = request.user.id
 
         return Response(response,status=status.HTTP_200_OK)
 

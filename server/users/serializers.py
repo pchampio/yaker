@@ -75,6 +75,11 @@ class FollowershipSerializer(serializers.ModelSerializer):
         user= User.objects.get(id=self.validated_data['user'])
         follower = User.objects.get(username=self.validated_data['follower'])
 
+        existingFollowerShip =Followership.objects.filter(user=user, follower=follower, isFollowing=False)
+        if existingFollowerShip.exists():
+            existingFollowerShip.update(isFollowing=True)
+            return self
+
         follower_model = Followership(user=user, follower=follower)
 
         try:
@@ -102,7 +107,7 @@ class FollowershipSerializer(serializers.ModelSerializer):
         except User.DoesNotExist:
             raise serializers.ValidationError(data['follower'] + " is not a valid User")
 
-        if Followership.objects.filter(user=user, follower=follower).exists():
+        if Followership.objects.filter(user=user, follower=follower, isFollowing=True).exists():
             raise serializers.ValidationError(data['follower'] + " is already followed")
         return data
 

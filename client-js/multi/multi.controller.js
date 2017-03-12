@@ -21,15 +21,12 @@
 
     vm.joinLobby = joinLobby;
     vm.createLobby = createLobby;
-    vm.userID = $rootScope.userID;
     vm.banUser = banUser;
     vm.startGame = startGame;
     vm.place = place;
     vm.itemTracker = itemTracker;
 
-    if ($rootScope.userID == null) {
-      $location.path('/');
-    }
+    vm.userID = $rootScope.globals.currentUser.user_id;
 
     var token = $rootScope.globals.currentUser.token;
     var socket = null;

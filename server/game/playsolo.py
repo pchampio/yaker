@@ -63,12 +63,9 @@ class GameSolo():
 
         firsts_followers = []
 
-        followers = Followership.objects.filter(user=user)
-        followers_array = [ x.follower  for x in followers ]
-
         for first in Save.objects.filter(
                 game=game_save,
-                user__in=followers_array
+                user__in=Followership.objects.filter(user=user, isFollowing=True).values_list('follower', flat=True)
                 ).order_by('-score'):
             firsts_followers.append(
                     {

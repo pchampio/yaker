@@ -1,11 +1,10 @@
 ﻿<div uib-alert ng-repeat="alert in vm.notif track by $index"
   ng-class="'alert-' + (alert.class || 'warning')"
   close="vm.deleteNotif(alert.id_cache)">
-  <strong> <b>{{alert.type}}:</b> </strong> {{alert.message}}
-
   <button type="button" ng-show="alert.type == 'Follower'"
     class="btn btn-default btn-sm pull-right" ng-click="vm.open('sm', alert)">Follow back
   </button>
+  <strong> <b>{{alert.type}}:</b> </strong> {{alert.message}}
 
 </div>
 

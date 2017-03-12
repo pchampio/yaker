@@ -15,11 +15,11 @@
   </div>
   <div class="btn-group btn-group-justified">
 
-    <a btn-default" ng-disabled="form.$invalid || vm.dataLoading"
-      class="btn btn-default" type="button" ng-click="form.$invalid  || vm.createLobby()">Create</a>
+    <a btn-default" ng-class="{disabled : form.$invalid || vm.dataLoading}"
+      class="btn btn-default" type="button" ng-click="form.$invalid || vm.createLobby()">Create</a>
 
-    <a btn-default" ng-disabled="form.$invalid || vm.dataLoading"
-      class="btn btn-default" type="button" ng-click="form.$invalid  || vm.joinLobby()">Join</a>
+    <a btn-default" ng-class="{disabled : form.$invalid || vm.dataLoading}"
+      class="btn btn-default"  type="button" ng-click="form.$invalid || vm.joinLobby()">Join</a>
 
   </div>
 </form>

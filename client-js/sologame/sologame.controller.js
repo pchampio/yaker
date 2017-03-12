@@ -17,7 +17,7 @@
 
 
     var token = $rootScope.globals.currentUser.token;
-    var svg = angular.element(document.querySelector('#svg'));
+    var svg =  null;
     var socket = null;
     var newGame;
 
@@ -115,6 +115,7 @@
         vm.dice = response.dice;
         if (response.error) {
           if (newGame == false){
+            svg = angular.element(document.querySelector('#svg'));
             svg.addClass('shake');
             $timeout(function(){
               svg.removeClass('shake');
@@ -150,6 +151,14 @@
         console.log('Modal dismissed at: ' + new Date());
       });
     }; // end modal
+
+
+    $scope.$on('$locationChangeStart', function( event ) {
+      // keep ws clean
+      if (socket) {
+        socket.close();
+      }
+    });
 
   }
 

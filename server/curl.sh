@@ -1,5 +1,5 @@
 # Token de drakirus
-http GET localhost:8000/users/me/ 'Authorization:token 	cdd3de3c02f62d41f126274e8d6a8cbc3b721d96'
+http GET localhost:8000/users/me/ 'Authorization:token 	1b8e7d9b748dfc28a4ea441689853eac3578238f'
 
 # del notif
 http DELETE localhost:8000/users/me/notif/1/ 'Authorization:token 	cdd3de3c02f62d41f126274e8d6a8cbc3b721d96'
@@ -33,4 +33,4 @@ http post localhost:8000/users/me/follower/delete/ \
 http POST localhost:8000/users/register/ username=Akumok \
   email=pierrsdddf@gmail.con password=jlkjkljkljkl
 
-http GET localhost:8000/users/login/ -a Akumok:jlkjkljkljkl
+http GET localhost:8000/users/login/ -a test:jkljkljkl

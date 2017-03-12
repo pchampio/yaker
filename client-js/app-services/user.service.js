@@ -67,7 +67,8 @@
 
       $rootScope.globals = {
         currentUser: {
-          token: response.data.token
+          token: response.data.token,
+          user_id: response.data.user_id
         }
       };
 
