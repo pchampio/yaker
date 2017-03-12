@@ -50,7 +50,7 @@
             Ban
           </a>
         </td>
-        <td class="text-center">
+        <td class="text-center" ng-show="vm.gamestart">
           <span ng-show="user.score">Score: {{user.score}}</span>
           <span ng-show="user.played == -1" class="label label-danger">Disconnected</span>
           <span ng-show="user.played == 0" class="label label-info">Waiting</span>

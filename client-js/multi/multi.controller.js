@@ -40,7 +40,6 @@
       $http.get($rootScope.backend + "/game/lobby/available/", {params:{"room": vm.lobbyName}})
         .then(
           function successCallback(response) {
-            vm.dataLoading = false;
             vm.lobbyError = false;
             joinLobby()
           },
@@ -55,13 +54,14 @@
     vm.dice = null;
     var gameEnd = false;
     function joinLobby() {
+      vm.dataLoading = true;
 
       socket = new WebSocket($rootScope.backendWs + "/playmulti/lobby/?token=" + token + "&room=" + vm.lobbyName);
 
       socket.onmessage = function(e) {
 
+        vm.dataLoading = false;
         var response = JSON.parse(e.data);
-
         FlashService.Clear()
 
         if (angular.equals(vm.lobbyInfo, response) || gameEnd == true) {
