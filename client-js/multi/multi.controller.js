@@ -63,7 +63,6 @@
         var response = JSON.parse(e.data);
 
         FlashService.Clear()
-        vm.dataLoading = true;
 
         if (angular.equals(vm.lobbyInfo, response) || gameEnd == true) {
           // more js compute less dom YAY
@@ -146,7 +145,6 @@
 
       // Call onopen directly if socket is already open
       if (socket.readyState == WebSocket.OPEN){
-        vm.dataLoading = false;
         socket.onopen();
       }
 
