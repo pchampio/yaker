@@ -30,9 +30,9 @@ LOGGING = {
     },
     'handlers': {
         'logfile': {
-           'level':'DEBUG',
+           'level':'INFO',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR + "/logfile",
+            'filename': BASE_DIR + "/log/logfile",
             'maxBytes': 50000,
             'backupCount': 2,
             'formatter': 'timestampthread'
