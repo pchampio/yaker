@@ -171,6 +171,7 @@ class GameMultiLobby():
             if game["players"][user_index]["played"] == 1:
                 GameManager, end = GameMulti.user_input({} ,user_id) # in case of reconnection
                 GameManager["error"] = "Waiting for the other users to play !"
+                del GameManager["dice"]
                 return {"user": GameManager}
 
 

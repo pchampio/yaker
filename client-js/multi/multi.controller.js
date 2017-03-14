@@ -58,6 +58,7 @@
     vm.nbBoardSeen = 0; // do not display first error when game start up
     vm.dice = null;
     var gameEnd = false;
+    var oldDice = "";
     function joinLobby() {
       vm.dataLoading = true;
 
@@ -89,6 +90,7 @@
 
         // on error
         if (response.error && vm.nbBoardSeen != 1) {
+          vm.dice = oldDice;
           FlashService.Error('<strong><u>Error:</u> '+ response.error + '</strong>',false);
           $window.scrollTo(0, 0);
           if (vm.gamestart == false) {
@@ -178,6 +180,10 @@
       socket.send(JSON.stringify({
         i:i, j:j
       }));
+      if (oldDice != "?") {
+        oldDice = vm.dice;
+      }
+      vm.dice = "?";
     }
 
     function itemTracker(item){
