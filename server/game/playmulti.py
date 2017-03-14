@@ -94,7 +94,6 @@ class GameMultiLobby():
         if user_index == None:
             return {"user": ({"error" : "Bad request"})}
 
-        logger.info(content)
         # CMD leave
         if "leave" in content :
             if int(game["op"]) == user_id:
@@ -152,9 +151,6 @@ class GameMultiLobby():
 
         # CMD d'un user pour jouer
         if "ingame" in game:
-
-            logger.info(game["game_id"])
-            logger.info(GameMulti.getUserGameSet(user_id)["game_id"])
 
             if not game["game_id"] == GameMulti.getUserGameSet(user_id)["game_id"]:
                 logger.warning("User id:" + str(user_id) + " might try to Cheat")
