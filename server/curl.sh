@@ -1,5 +1,5 @@
 # Token de drakirus
-http GET localhost:8000/users/me/ 'Authorization:token 	1b8e7d9b748dfc28a4ea441689853eac3578238f'
+http GET localhost:8000/users/me/ 'Authorization:token 	00725f100a321d8df433f5dc1c3aa62be7bc59b6'
 
 # del notif
 http DELETE localhost:8000/users/me/notif/1/ 'Authorization:token 	cdd3de3c02f62d41f126274e8d6a8cbc3b721d96'

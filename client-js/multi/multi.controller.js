@@ -25,9 +25,14 @@
     vm.startGame = startGame;
     vm.place = place;
     vm.itemTracker = itemTracker;
-    vm.isAdmin = isAdmin;
+    vm.isAdmin = null;
 
     vm.userID = $rootScope.globals.currentUser.user_id;
+
+    if (!vm.userID) {
+      FlashService.Error("Client error could not found your user.id",true);
+      $location.path('/');
+    }
 
     var token = $rootScope.globals.currentUser.token;
     var socket = null;
@@ -102,6 +107,7 @@
         // info sur les users
         if (response.op) {
           vm.lobbyInfo = response;
+          vm.isAdmin = vm.lobbyInfo && vm.lobbyInfo.op === vm.userID;
         }
 
         // new dice
@@ -179,10 +185,6 @@
         return 220-item.score; // desc
       }
       return item.id;
-    }
-
-    function isAdmin() {
-      return vm.lobbyInfo && vm.lobbyInfo.op === vm.userID
     }
 
     // Private

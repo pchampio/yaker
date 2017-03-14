@@ -31,28 +31,28 @@
   <table class="table table-striped table-hover">
     <thead>
       <tr>
-        <th class="text-center">#</th>
-        <th class="text-center">User</th>
-        <th class="text-center" ng-show="vm.gamestart">Status</th>
+        <th>#</th>
+        <th class="text-center" >User</th>
+        <th class="text-right" ng-show="vm.gamestart">Status</th>
       </tr>
     </thead>
     <tbody>
       <!-- ng-class="{'info' : user.played === 0 , 'success' : user.played === 1, 'danger' : user.played === -1}" -->
       <tr
         ng-repeat="(i, user) in vm.lobbyInfo.players track by vm.itemTracker(user)">
-        <td class="text-center">{{i+1}}</td>
-        <td class="text-center">
+        <td>{{i+1}}</td>
+        <td class="text-center" >
           {{user.name}}
           <span ng-show="user.id === vm.lobbyInfo.op"><b> (Admin)</b></span>
           &ensp;
           <a class="btn btn-warning btn-xs" ng-click="vm.banUser(user.id)"
-            ng-show="vm.isAdmin() && user.id != vm.lobbyInfo.op && !user.score">
+            ng-show="vm.isAdmin && user.id != vm.lobbyInfo.op && !user.score">
             Ban
           </a>
         </td>
-        <td class="text-center" ng-show="vm.gamestart">
+        <td class="text-right" ng-show="vm.gamestart">
           <span ng-show="user.score">Score: {{user.score}}</span>
-          <span ng-show="user.played == -1" class="label label-danger">Disconnected</span>
+          <span ng-show="user.deco" class="label label-danger">Deco</span>
           <span ng-show="user.played == 0" class="label label-info">Waiting</span>
         </td>
       </tr>
@@ -61,7 +61,7 @@
 </div>
 
 <!-- Start the game -->
-<div class="btn-group btn-group-justified" ng-show="vm.isAdmin() && (!vm.gamestart)">
+<div class="btn-group btn-group-justified" ng-show="vm.isAdmin && (!vm.gamestart)">
   <a class="btn btn-success" ng-click="vm.startGame()">Start</a>
 </div>
 

@@ -31,13 +31,11 @@ class GameMultiLobby():
     def newConsumerLobby(user, room):
         key = "lobby:"+room
         game = None
-        if key in cache:
+        if key in cache: # si le lobby existe
             game = cache.get(key)
             new_user = {"name":user.username,"id":user.id}
-            if new_user in game["players"]:
-                return {"group":game}
 
-            if user.id in game["ban"]:
+            if user.id in game["ban"]: # user banned
                 return {
                     "user": ({"error": "You are not allowed to enter the lobby"}),
                     "user_close":True
@@ -45,21 +43,31 @@ class GameMultiLobby():
 
             loggedInLobby =  any(d.get("id", None) == user.id for d in game["players"])
 
-            if "ingame" in game and not loggedInLobby:
+            if "ingame" in game and not loggedInLobby: # do not Accept user
                 return {
                     "user": ({"error": "Game already started ;("}),
                     "user_close":True
             }
 
-            if not loggedInLobby:
+            if not loggedInLobby: # first connect of user in lobby
                 game["players"].append(new_user)
                 cache.set(key,game,60*10)
             logger.info("User " + user.username + " has join a lobby : "+room)
 
-        else:
+        else:  # Lobby init first user (op)
             game = {"op": user.id, "players":[{"name":user.username,"id":user.id}],"ban":[]}
             cache.set(key,game , 60 * 2)
             logger.info("User " + user.username + " has start a new lobby : "+room)
+
+
+        # user no more disconnected
+        user_index = None
+        for i in reversed(range(len(game["players"]))):
+            if game["players"][i]["id"] == user.id:
+                user_index = i
+
+        game["players"][user_index]["deco"] = False
+        cache.set(key,game , 60 * 2)
 
         return {"group":game}
 
@@ -86,6 +94,7 @@ class GameMultiLobby():
         if user_index == None:
             return {"user": ({"error" : "Bad request"})}
 
+        logger.info(content)
         # CMD leave
         if "leave" in content :
             if int(game["op"]) == user_id:
@@ -95,7 +104,8 @@ class GameMultiLobby():
                 if "ingame" not in game:
                     game["players"].pop(user_index)
                 else:
-                    game["players"][user_index]["played"] = -1 # disconnected
+                    game["players"][user_index]["deco"] = True # disconnected
+                    cache.set(key, game, 60 * 10)
                     return {"group": game}
 
 
@@ -129,6 +139,7 @@ class GameMultiLobby():
         if "startGame" in content and int(game["op"]) == user_id and "ingame" not in game:
             game["ingame"] = 1
             gameSession = Game.objects.order_by('?').first()
+            game["game_id"] = gameSession.id
 
             for i in reversed(range(len(game["players"]))):
                 game["players"][i]["played"] = 0
@@ -141,6 +152,26 @@ class GameMultiLobby():
 
         # CMD d'un user pour jouer
         if "ingame" in game:
+
+            logger.info(game["game_id"])
+            logger.info(GameMulti.getUserGameSet(user_id)["game_id"])
+
+            if not game["game_id"] == GameMulti.getUserGameSet(user_id)["game_id"]:
+                logger.warning("User id:" + str(user_id) + " might try to Cheat")
+
+                # TODO Cleaner code!!
+                game["players"].pop(user_index)
+                game["ban"].append(user_id)
+
+                if "ingame" in game and all_users_played(game):
+                    # raz next num
+                    for i in reversed(range(len(game["players"]))):
+                        game["players"][i]["played"] = 0
+
+                cache.set(key, game, 60 * 10)
+                return {"group":game}
+
+
             if game["players"][user_index]["played"] == 1:
                 GameManager, end = GameMulti.user_input({} ,user_id) # in case of reconnection
                 GameManager["error"] = "Waiting for the other users to play !"
@@ -197,6 +228,12 @@ class GameMulti(GameSolo):
         game['index_set'] = 0
         game['user_id'] = user
         cache.set(key, game, 120)
+
+    @classmethod
+    def getUserGameSet(cls,user_id):
+        key = 'user:'+ str(user_id) + cls.str_key_cache
+        return cache.get(key)
+
 
     def save(game, user_id):
         logger.info("User" + str(user_id) + " end of Multi game")

@@ -3,6 +3,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
+if not os.path.exists(BASE_DIR + "/log/"):
+    os.makedirs(BASE_DIR + "/log/")
+
 # the basic logger other apps can import
 logger = logging.getLogger(__name__)
 
@@ -38,7 +41,7 @@ LOGGING = {
             'formatter': 'timestampthread'
         },
         'console': {
-            'level': 'DEBUG', # DEBUG or higher goes to the console
+            'level': 'INFO', # INFO or higher goes to the console
             #  'class': 'logging.StreamHandler',
             "class": "colorstreamhandler.ColorStreamHandler",
             'formatter': 'simple',

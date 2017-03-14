@@ -11,10 +11,8 @@
 
     vm.login = login;
 
-    (function initController() {
-      // reset login status
-      UserService.ClearCredentials();
-    })();
+    // reset login status
+    UserService.ClearCredentials();
 
     function login() {
       vm.dataLoading = true;

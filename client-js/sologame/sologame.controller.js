@@ -68,6 +68,13 @@
         }));
       }
       if (socket.readyState == WebSocket.OPEN) socket.onopen();
+
+      socket.onclose = function (e) {
+        if (vm.score) {
+          return;
+        }
+        $route.reload();
+      };
     }
 
     function enableResizeCell(){

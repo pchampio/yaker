@@ -29,7 +29,9 @@
       UserService.Logged()
         .then(function (res) {
           vm.notif = res.data.notif;
-
+          if ($rootScope.globals.currentUser.user_id) {
+            $rootScope.globals.currentUser.user_id = res.data.user_id;
+          }
           if (!vm.notif) {
             return;
           }

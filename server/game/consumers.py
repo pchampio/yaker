@@ -96,7 +96,7 @@ class ConsumerMultiLobby(JsonWebsocketConsumer):
         except:
             self.receive({}, message.channel_session)
             logger.error("User " + message.channel_session["username"] +
-                    ": Error parsing incoming json WebSocket:\nJson:\t" + message["text"])
+                    ": Error :\nJson:\t" + message["text"])
 
     def receive(self, content, channel_session):
         """ GameMultiLobby do the work """

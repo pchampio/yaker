@@ -15,6 +15,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
+# REDIS_HOST ev is set on the dockerfile
 redis_host = os.environ.get('REDIS_HOST', 'localhost')
 
 
@@ -24,10 +25,10 @@ redis_host = os.environ.get('REDIS_HOST', 'localhost')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '11111111111111111111111111111111111111111111111111'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 if os.environ.get('REDIS_HOST', None):
     DEBUG = False
 else:
+    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
 
 # Static files (CSS, JavaScript, Images)

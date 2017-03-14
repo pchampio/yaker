@@ -118,7 +118,7 @@ class AuthUser(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        response = {'username': request.user.username}
+        response = {'username': request.user.username, 'user_id':request.user.id}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
 
         return Response(response,status=status.HTTP_200_OK)
