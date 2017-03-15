@@ -109,3 +109,16 @@
     border-radius: 1em;
     font-size: 13px;
 }
+.list-group-item-gold {
+    color: rgb(111, 84, 0);
+    background-color: rgb(201,137,16);
+}
+.list-group-item-silver {
+    color:  rgb(94, 91, 91);
+    background-color: rgb(168,168,168);
+}
+.list-group-item-modira {
+    color:rgb(78, 45, 26);
+    background-color: rgb(150,90,56);
+}
+

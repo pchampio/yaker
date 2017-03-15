@@ -36,6 +36,7 @@ class GameMultiLobby():
             new_user = {"name":user.username,"id":user.id}
 
             if user.id in game["ban"]: # user banned
+                logger.info("User " + user.username + " has been banned from lobby :"+room)
                 return {
                     "user": ({"error": "You are not allowed to enter the lobby"}),
                     "user_close":True
@@ -52,12 +53,12 @@ class GameMultiLobby():
             if not loggedInLobby: # first connect of user in lobby
                 game["players"].append(new_user)
                 cache.set(key,game,60*10)
-            logger.info("User " + user.username + " has join a lobby : "+room)
+            logger.info("User " + user.username + " has join a lobby :"+room)
 
         else:  # Lobby init first user (op)
             game = {"op": user.id, "players":[{"name":user.username,"id":user.id}],"ban":[]}
             cache.set(key,game , 60 * 2)
-            logger.info("User " + user.username + " has start a new lobby : "+room)
+            logger.info("User " + user.username + " has created a new lobby : "+room)
 
 
         # user no more disconnected
@@ -98,15 +99,18 @@ class GameMultiLobby():
         if "leave" in content :
             if int(game["op"]) == user_id:
                 cache.delete(key)
+                logger.info("User " + game["players"][user_index]["name"] +
+                            " has canceled lobby: "+channel_session["room"])
                 return {"group" : ({"error" : "Operator canceled the lobby"}),"group_close":True}
             if user_index is not None:
+                logger.info("User " + game["players"][user_index]["name"] +
+                            " has leave lobby: "+channel_session["room"])
                 if "ingame" not in game:
                     game["players"].pop(user_index)
                 else:
                     game["players"][user_index]["deco"] = True # disconnected
                     cache.set(key, game, 60 * 10)
                     return {"group": game}
-
 
                 cache.set(key, game, 60 * 10)
                 return {"group":game,"user_close":True}
@@ -147,6 +151,9 @@ class GameMultiLobby():
             cache.set(key, game, 60 * 10)
             GameManager, end = GameMulti.user_input(content,user_id)
             game["dice"] = GameManager["dice"]
+
+            logger.info("User " + game["players"][user_index]["name"] +
+                        " has start a game in lobby: "+channel_session["room"])
             return {"group":game}
 
         # CMD d'un user pour jouer
@@ -181,21 +188,22 @@ class GameMultiLobby():
                 dice = GameManager["dice"]
                 del GameManager["dice"]
 
-            response = {"user": GameManager, "group": game}
+            response = {"user": GameManager}
 
             if "error" not in GameManager:
+                response["group"] = game
+
                 game["players"][user_index]["played"] = 1
                 if end == True:
                     # send user score to every users
+                    logger.info("User " + game["players"][user_index]["name"] +
+                                " end Multi game lobby: "+channel_session["room"]+
+                                ", Score: " + str(GameManager['score']))
                     response["group"] = {i:GameManager[i] for i in GameManager if i!='board'}
 
                 if all_users_played(game):
-                    # end de la game unset ingame in game
-                    if end == True:
-                        del game["ingame"]
-                    else:
-                        # send next dice
-                        response["group"]["dice"] = dice
+                    # send next dice
+                    response["group"]["dice"] = dice
 
                     # raz next num
                     for i in reversed(range(len(game["players"]))):
@@ -233,11 +241,10 @@ class GameMulti(GameSolo):
 
 
     def save(game, user_id):
-        logger.info("User" + str(user_id) + " end of Multi game")
         score = Score(game['user_board'])
-        return({
+        return{
             "user_id": user_id,
             "score": score,
             "board": game['user_board'],
-            })
+            }
 

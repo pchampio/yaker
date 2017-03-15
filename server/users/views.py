@@ -18,6 +18,10 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.contrib.auth.models import User
 from .models import Followership
 
+from game.models import Save
+
+from datetime import date, timedelta
+
 #  There is Q objects that allow to complex lookups. or in filter
 from django.db.models import Q
 
@@ -42,6 +46,7 @@ class CreateUser(APIView):
                 json = serializer.data
                 json['token'] = token.key
                 del json['id']
+                logger.info("new user: " + user.username)
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,7 +67,6 @@ class FollowershipVue(APIView):
         data['user'] = request.user.id
         if 'follower' in request.data:
             data['follower']=request.data['follower']
-        logger.info(data)
         serializer = FollowershipSerializer(data=data)
         if serializer.is_valid():
             follower = serializer.save()
@@ -120,6 +124,11 @@ class AuthUser(APIView):
     def get(self, request, format=None):
         response = {'username': request.user.username, 'user_id':request.user.id}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
+
+        last_week = date.today() - timedelta(days=7)
+        response['best_last_w'] = []
+        for save in Save.objects.filter(date__gte=last_week).order_by('-score')[:4]:
+            response['best_last_w'].append({"user":save.user.username, "score":save.score})
 
         return Response(response,status=status.HTTP_200_OK)
 

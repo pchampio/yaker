@@ -36,6 +36,25 @@
   </div>
 </form>
 
+<div class="form-group">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h5>Podium of the week (only Solo)</h5></div>
+    <div class="panel-body">
+      <div class="list-group text-center">
+        <h5  class="list-group-item list-group-item-gold">
+          <b>{{vm.first.user}}</b>: {{vm.first.score}} Pts
+        </h5>
+        <h5  class="list-group-item list-group-item-silver">
+          <b>{{vm.sec.user}}</b>: {{vm.sec.score}} Pts
+        </h5>
+        <h5  class="list-group-item list-group-item-modira">
+          <b>{{vm.th.user}}</b>: {{vm.th.score}} Pts
+        </h5>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/ng-template" id="addFollowerModal.html">
   <div class="modal-header">
     <h3 class="modal-title" id="modal-title">Follow {{vm.user}}</h3>
@@ -71,10 +90,10 @@
 
 <script type="text/ng-template" id="customPopupTemplate.html">
   <div class="custom-popup-wrapper"
-     ng-style="{top: position().top+'px', left: position().left+'px'}"
-     style="display: block;"
-     ng-show="isOpen() && !moveInProgress"
-     aria-hidden="{{!isOpen()}}">
+    ng-style="{top: position().top+'px', left: position().left+'px'}"
+    style="display: block;"
+    ng-show="isOpen() && !moveInProgress"
+    aria-hidden="{{!isOpen()}}">
     <p class="message">select location from drop down.</p>
 
     <ul class="dropdown-menu" role="listbox">

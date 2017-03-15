@@ -24,7 +24,6 @@
     vm.banUser     = banUser;
     vm.startGame   = startGame;
     vm.place       = place;
-    vm.itemTracker = itemTracker;
     vm.isAdmin     = null;
     vm.userID      = $rootScope.globals.currentUser.user_id;
 
@@ -154,6 +153,7 @@
           // End game
           if (nb_players_end >= vm.lobbyInfo.players.length) {
             gameEnd = true;
+            $window.scrollTo(0, 0);
           }
         }
 
@@ -189,13 +189,6 @@
       socket.send(JSON.stringify({
         i:i, j:j
       }));
-    }
-
-    function itemTracker(item){
-      if (gameEnd) {
-        return 220-item.score; // desc
-      }
-      return item.id;
     }
 
     // Private

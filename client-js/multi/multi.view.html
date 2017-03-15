@@ -39,7 +39,7 @@
     <tbody>
       <!-- ng-class="{'info' : user.played === 0 , 'success' : user.played === 1, 'danger' : user.played === -1}" -->
       <tr
-        ng-repeat="(i, user) in vm.lobbyInfo.players track by vm.itemTracker(user)">
+        ng-repeat="(i, user) in vm.lobbyInfo.players | orderBy:'score':true track by user.id">
         <td>{{i+1}}</td>
         <td class="text-center" >
           {{user.name}}
