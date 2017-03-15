@@ -1,4 +1,8 @@
-﻿.table-game {
+﻿body {
+  font-family: sans-serif;
+}
+
+.table-game {
   width: 100%;
 }
 .table-game td {

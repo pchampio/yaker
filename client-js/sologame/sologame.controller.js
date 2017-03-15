@@ -5,19 +5,21 @@
     .module('app')
     .controller('SoloGameController', SoloGameController);
 
-  SoloGameController.$inject = ['UserService',
-    'FlashService', '$rootScope',
-    '$route', '$uibModal', '$document', '$window', '$timeout', '$scope'];
+  SoloGameController.$inject =
+    ['UserService', 'FlashService', '$rootScope',
+      '$location',     '$route',    '$uibModal',
+      '$document',    '$window',     '$timeout',  '$scope'];
 
-  function SoloGameController(UserService,
-    FlashService, $rootScope,
-    $route, $uibModal, $document, $window, $timeout, $scope) {
+  function SoloGameController(
+    UserService, FlashService,
+    $rootScope,   $location,   $route,
+     $uibModal,   $document,   $window, $timeout, $scope) {
 
     var vm = this;
 
 
-    var token = $rootScope.globals.currentUser.token;
-    var svg =  null;
+    var token  = $rootScope.globals.currentUser.token;
+    var svg    = null;
     var socket = null;
     var newGame;
 
@@ -73,7 +75,8 @@
         if (vm.score) {
           return;
         }
-        $route.reload();
+        FlashService.Error('<strong><u>Error:</u> Could not connect to the Api</strong>',false);
+        $location.path('/');
       };
     }
 

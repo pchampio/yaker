@@ -3,8 +3,8 @@
   angular.module('app').controller('howFollowerBoard',
 
     function($uibModalInstance, $http, FlashService, UserService, row, $rootScope, $window) {
-      var $ctrl = this;
-      $ctrl.row = row;
+      var $ctrl  = this;
+      $ctrl.row  = row;
       $ctrl.game = row.board;
 
       $ctrl.ok = function() {

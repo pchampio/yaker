@@ -9,15 +9,15 @@
   function HomeController(UserService, FlashService, $rootScope, $uibModal, $document) {
     var vm = this;
 
-    vm.user = null;
+    vm.user  = null;
     vm.notif = [];
+    vm.user = $rootScope.globals.currentUser.username;
 
-    vm.deleteNotif = deleteNotif;
-    vm.open = open;
-    vm.addFollower = addFollower;
+    vm.deleteNotif  = deleteNotif;
+    vm.open         = open;
+    vm.addFollower  = addFollower;
     vm.dellFollower = dellFollower;
 
-    vm.user = $rootScope.globals.currentUser.username;
 
     initController();
 
@@ -29,7 +29,7 @@
       UserService.Logged()
         .then(function (res) {
           vm.notif = res.data.notif;
-          if ($rootScope.globals.currentUser.user_id) {
+          if (!$rootScope.globals.currentUser.user_id) {
             $rootScope.globals.currentUser.user_id = res.data.user_id;
           }
           if (!vm.notif) {

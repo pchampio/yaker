@@ -19,26 +19,26 @@
     var vm = this;
 
 
-    vm.joinLobby = joinLobby;
+    vm.joinLobby   = joinLobby;
     vm.createLobby = createLobby;
-    vm.banUser = banUser;
-    vm.startGame = startGame;
-    vm.place = place;
+    vm.banUser     = banUser;
+    vm.startGame   = startGame;
+    vm.place       = place;
     vm.itemTracker = itemTracker;
-    vm.isAdmin = null;
+    vm.isAdmin     = null;
+    vm.userID      = $rootScope.globals.currentUser.user_id;
 
-    vm.userID = $rootScope.globals.currentUser.user_id;
 
     if (!vm.userID) {
       FlashService.Error("Client error could not found your user.id",true);
       $location.path('/');
     }
 
-    var token = $rootScope.globals.currentUser.token;
+    var token  = $rootScope.globals.currentUser.token;
     var socket = null;
 
     vm.lineHeight = 50;
-    vm.gamestart = false;
+    vm.gamestart  = false;
 
     function createLobby() {
       vm.dataLoading = true;
@@ -58,7 +58,6 @@
     vm.nbBoardSeen = 0; // do not display first error when game start up
     vm.dice = null;
     var gameEnd = false;
-    var oldDice = "";
     function joinLobby() {
       vm.dataLoading = true;
 
@@ -90,7 +89,6 @@
 
         // on error
         if (response.error && vm.nbBoardSeen != 1) {
-          vm.dice = oldDice;
           FlashService.Error('<strong><u>Error:</u> '+ response.error + '</strong>',false);
           $window.scrollTo(0, 0);
           if (vm.gamestart == false) {
@@ -106,15 +104,26 @@
           return;
         }
 
-        // info sur les users
-        if (response.op) {
-          vm.lobbyInfo = response;
-          vm.isAdmin = vm.lobbyInfo && vm.lobbyInfo.op === vm.userID;
-        }
 
         // new dice
         if (response.dice) {
           vm.dice = response.dice;
+        }
+
+        // info sur les users
+        if (response.op) {
+          vm.lobbyInfo = response;
+          vm.isAdmin = vm.lobbyInfo && vm.lobbyInfo.op === vm.userID;
+
+          for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
+            if (vm.userID == vm.lobbyInfo.players[i]["id"]) {
+              if (vm.lobbyInfo.players[i].played == 1) {
+                vm.dice = "?";
+              }
+              break;
+            }
+          }
+
         }
 
         // board
@@ -180,10 +189,6 @@
       socket.send(JSON.stringify({
         i:i, j:j
       }));
-      if (oldDice != "?") {
-        oldDice = vm.dice;
-      }
-      vm.dice = "?";
     }
 
     function itemTracker(item){
