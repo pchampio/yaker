@@ -70,14 +70,6 @@
         }));
       }
       if (socket.readyState == WebSocket.OPEN) socket.onopen();
-
-      socket.onclose = function (e) {
-        if (vm.score) {
-          return;
-        }
-        FlashService.Error('<strong><u>Error:</u> Could not connect to the Api</strong>',false);
-        $location.path('/');
-      };
     }
 
     function enableResizeCell(){
