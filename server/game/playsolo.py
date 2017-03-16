@@ -100,6 +100,9 @@ class GameSolo():
         board = jsonDec.decode(game['game_set'])
 
         #  logger.info(game)
+        if "skip" in content:
+            cache.delete(key)
+            return None,True # close ws
 
         if "i" in content and 'j' in content:
             i = content['i']

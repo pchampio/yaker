@@ -2,12 +2,12 @@
   'use strict';
 
   angular
-    .module('app', ['ngRoute', 'ngCookies', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
+    .module('app', ['ngRoute', 'ngCookies', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'chart.js'])
     .config(config)
     .run(run);
 
-  config.$inject = ['$routeProvider', '$locationProvider'];
-  function config($routeProvider, $locationProvider) {
+  config.$inject = ['$routeProvider', '$locationProvider', 'ChartJsProvider'];
+  function config($routeProvider, $locationProvider, ChartJsProvider) {
     $routeProvider
       .when('/', {
         controller: 'HomeController',
@@ -40,7 +40,15 @@
       })
 
       .otherwise({ redirectTo: '/login' });
-  }
+
+    // Configure all charts
+    ChartJsProvider.setOptions({
+      chartColors: ['#FF5252', '#FF8A80'],
+      responsive: false,
+      showLines: true
+    });
+
+  }// end conf
 
   function in_array(needle, haystack){
     var found = 0;

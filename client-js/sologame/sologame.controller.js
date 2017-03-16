@@ -27,8 +27,9 @@
    initCtrl();
 
     // methods Public
-    vm.place = place;
+    vm.place  = place;
     vm.reload = reload;
+    vm.skip   = skip;
 
 
     function initCtrl(){
@@ -101,6 +102,14 @@
     }
 
     function reload(){
+      $route.reload();
+    }
+
+    function skip(){
+      socket.send(JSON.stringify({
+        skip:true
+      }));
+      socket.close();
       $route.reload();
     }
 

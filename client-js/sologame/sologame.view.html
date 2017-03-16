@@ -20,7 +20,7 @@
           <div  class="cell" ng-click="vm.place(i, j)"
             ng-style="{'line-height': vm.lineHeight+'px', 'font-size': vm.lineHeight/1.4+'px'}"
             ng-class="(i == j || i + j == 4) ? 'btn-warning' : 'btn-default'" >
-            {{cell}}
+            {{cell == 0 ? '' : cell}}
           </div>
         </td>
       </tr>
@@ -28,143 +28,18 @@
   </table>
 
   <hr />
-  <div ng-show="vm.dice != null">
 
+  <div ng-show="vm.dice != null">
     <div class="btn-group btn-group-justified" >
       <a href="#" class="btn btn-default">Back</a>
+      <a ng-click='vm.skip()' class="btn btn-default">Skip</a>
     </div>
     <br />
-
-    <table class="table table-condensed info-pts">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Example</th>
-          <th >Pts</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        <tr>
-          <td>
-            One pair
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-default label-as-badge">6</span>
-            <span class="label label-default label-as-badge">7</span>
-            <span class="label label-default label-as-badge">8</span>
-            <td><span> 1 </span></td>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            Two pair
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-warning label-as-badge">8</span>
-            <span class="label label-warning label-as-badge">8</span>
-            <span class="label label-default label-as-badge">7</span>
-            <td><span> 3 </span></td>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            Three of a kind
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-default label-as-badge">8</span>
-            <span class="label label-default label-as-badge">7</span>
-            <td><span> 3 </span></td>
-          </td>
-        </tr>
-
-
-        <tr>
-          <td>
-            Full house
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-warning label-as-badge">8</span>
-            <span class="label label-warning label-as-badge">8</span>
-            <td><span> 6 </span></td>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            Four of a kind
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-default label-as-badge">8</span>
-            <td><span> 6 </span></td>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            UnSorted straight
-          </td>
-          <td>
-            <span class="label label-warning label-as-badge">7</span>
-            <span class="label label-danger label-as-badge">8</span>
-            <span class="label label-success label-as-badge">5</span>
-            <span class="label label-primary label-as-badge">4</span>
-            <span class="label label-info label-as-badge">6</span>
-            <td><span> 8 </span></td>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            Five of a kind
-          </td>
-          <td>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-            <span class="label label-success label-as-badge">9</span>
-          </td>
-          <td> 8 </td>
-        </tr>
-
-        <tr>
-          <td>Sorted straight</td>
-          <td>
-            <span class="label label-danger label-as-badge">8</span>
-            <span class="label label-warning label-as-badge">7</span>
-            <span class="label label-info label-as-badge">6</span>
-            <span class="label label-success label-as-badge">5</span>
-            <span class="label label-primary label-as-badge">4</span>
-          </td>
-          <td> 12 </td>
-        </tr>
-
-      </tbody>
-    </table>
-
-<p class="lead text-center">
-  Those combinations apply in all 5 <u>Rows</u> and 5 <u>Columns</u>.<br />
-  In the tow <u>diagonals</u> the combinations count <b>double</b>.
-  <p/>
-
+    <!-- directive angular js -->
+    <regles></regles>
   </div>
+
+
   <div class="btn-group btn-group-justified" ng-show="vm.dice == null">
     <a href="#" class="btn btn-default">Back</a>
     <a ng-click='vm.reload()' class="btn btn-default">New Game</a>

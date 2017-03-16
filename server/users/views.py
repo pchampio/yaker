@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from .models import Followership
 
 from game.models import Save
+from django.db.models import Avg
 
 from datetime import date, timedelta
 
@@ -125,10 +126,29 @@ class AuthUser(APIView):
         response = {'username': request.user.username, 'user_id':request.user.id}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
 
-        last_week = date.today() - timedelta(days=7)
-        response['best_last_w'] = []
-        for save in Save.objects.filter(date__gte=last_week).order_by('-score')[:4]:
-            response['best_last_w'].append({"user":save.user.username, "score":save.score})
+        last_day = date.today() - timedelta(days=3)
+
+        # best Games
+        response['best_last'] = []
+        for save in Save.objects.filter(date__gte=last_day).order_by('-score')[:3]:
+            response['best_last'].append({"user":save.user.username, "score":save.score})
+
+        # Worst Games
+        worst = Save.objects.filter(date__gte=last_day).order_by('score')[0]
+        response['worst'] = {"user":worst.user.username, "score":worst.score}
+
+        # 7 last user  games
+        response['last_games'] = []
+        for save in Save.objects.filter(user=request.user).order_by('date')[:7]:
+            response['last_games'].append({"date":save.date.strftime('%d/%m'), "score":save.score})
+
+
+        avg = Save.objects.filter(
+            user=request.user
+        ).aggregate(Avg('score'))
+
+        print (round(avg['score__avg'],2))
+        response['score__avg'] = round(avg['score__avg'],2)
 
         return Response(response,status=status.HTTP_200_OK)
 

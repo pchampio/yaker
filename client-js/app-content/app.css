@@ -20,6 +20,7 @@
   touch-action: manipulation;
   text-transform: uppercase;
   border: none;
+  outline: 1px solid rgba(255, 152, 0, 0.53);
   -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
   -webkit-transition: all 0.4s;
@@ -110,15 +111,15 @@
     font-size: 13px;
 }
 .list-group-item-gold {
-    color: rgb(111, 84, 0);
-    background-color: rgb(201,137,16);
+    color: rgb(142, 116, 11);
+    background-color: rgb(212, 170, 6);
 }
 .list-group-item-silver {
-    color:  rgb(94, 91, 91);
-    background-color: rgb(168,168,168);
+    color:  rgb(86, 83, 83);
+    background-color: rgb(144, 142, 142);
 }
 .list-group-item-modira {
-    color:rgb(78, 45, 26);
-    background-color: rgb(150,90,56);
+    color:rgb(94, 55, 32);
+    background-color: rgb(175, 101, 59);
 }
 

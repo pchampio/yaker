@@ -14,8 +14,13 @@ def create_game_set():
     set = []
     seed_bytes=128
     for i in range(0,25) :
+        # still don't now how to Generate real random
+        # got 5 6 dice in a row on a save ;(
         random.seed(os.urandom(seed_bytes))
-        set.append(random.randint(1,6) + random.randint(1,6))
+        first_dice = random.randint(1,6)
+        random.seed(os.urandom(seed_bytes))
+        second_dice = random.randint(1,6)
+        set.append(first_dice + second_dice)
 
     if Game.objects.filter(game_set=set).exists():
         set = create_game_set()

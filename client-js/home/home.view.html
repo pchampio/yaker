@@ -21,7 +21,7 @@
     <div class="panel panel-default">
       <div class="panel-heading"><h5>Follow</h5></div>
       <div class="panel-body">
-        Enable you to consult the followers board in Solo.
+        Enables you to consult the followers board in Solo.
         <div class="input-group">
           <span class="input-group-addon">User: </span>
           <input type="text" class="form-control" ng-model="vm.follower" required>
@@ -38,8 +38,24 @@
 
 <div class="form-group">
   <div class="panel panel-default">
-    <div class="panel-heading"><h5>Podium of the week (only Solo)</h5></div>
+    <div class="panel-heading"><h5>{{vm.user}}'s stats</h5></div>
     <div class="panel-body">
+      <div class="list-group text-center">
+        <h5  class="list-group-item">
+          <b>Average score: </b>{{vm.avg}} Pts
+        </h5>
+      </div>
+      <canvas class="chart chart-line center-block" chart-data="data" chart-labels="labels"
+        chart-series="series"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h5>Podium (last 3 days)</h5></div>
+    <div class="panel-body">
+      <p class="text-center"><b>Best Solo Games:</b></p>
       <div class="list-group text-center">
         <h5  class="list-group-item list-group-item-gold">
           <b>{{vm.first.user}}</b>: {{vm.first.score}} Pts
@@ -51,6 +67,16 @@
           <b>{{vm.th.user}}</b>: {{vm.th.score}} Pts
         </h5>
       </div>
+
+      <p class="text-center"><b>
+          <span style="text-decoration: overline;">Best</span> Solo Games:
+      </b></p>
+
+      <div class="list-group text-center">
+        <h5  class="list-group-item list-group-item-info" >
+          <b>{{vm.worst.user}}</b>: {{vm.worst.score}} Pts
+        </h5>
+    </div>
     </div>
   </div>
 </div>

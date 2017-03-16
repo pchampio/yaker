@@ -5,11 +5,10 @@
     .module('app')
     .controller('HomeController', HomeController);
 
-  HomeController.$inject = ['UserService', 'FlashService', '$rootScope', '$uibModal', '$document'];
-  function HomeController(UserService, FlashService, $rootScope, $uibModal, $document) {
+  HomeController.$inject = ['UserService', 'FlashService', '$rootScope', '$uibModal', '$document', '$scope'];
+  function HomeController(UserService, FlashService, $rootScope, $uibModal, $document, $scope) {
     var vm = this;
 
-    vm.user  = null;
     vm.notif = [];
     vm.user = $rootScope.globals.currentUser.username;
 
@@ -22,6 +21,11 @@
     initController();
 
     function initController() {
+      $scope.labels = ["", "", "", "", "", "", ""];
+      $scope.data = [
+        [0, 0, 0, 0, 0, 0, 0]
+      ];
+
       loadCurrentUser();
     }
 
@@ -30,9 +34,15 @@
         .then(function (res) {
           vm.notif = res.data.notif;
           $rootScope.globals.currentUser.user_id = res.data.user_id; // just in case
-          vm.first = res.data.best_last_w[0]
-          vm.sec = res.data.best_last_w[1]
-          vm.th = res.data.best_last_w[2]
+          vm.first = res.data.best_last[0];
+          vm.sec = res.data.best_last[1];
+          vm.th = res.data.best_last[2];
+          vm.avg =  res.data.score__avg;
+          vm.worst =  res.data.worst;
+          for (var i = 0, len = res.data.last_games.length; i < len; i++) {
+            $scope.labels[i] = res.data.last_games[i].date;
+            $scope.data[0][i] = (res.data.last_games[i].score);
+          }
           if (!vm.notif) {
             return;
           }

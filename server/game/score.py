@@ -3,6 +3,7 @@ def is_Sorted(lst):
        return True
     return lst[0] < lst[1] and is_Sorted(lst[1:])
 
+# return one row
 def diagonal(matrix):
     return ([matrix[i][i] for i in range(min(len(matrix[0]),len(matrix)))])
 
@@ -38,12 +39,10 @@ def score_in_board(board):
     for row in board:
         pts += score_in_row(row)
 
-    pts += score_in_row(diagonal(board))
+    pts += ( score_in_row(diagonal(board)) )*2
     return pts
 
 def Score(board):
-    #  for index, row in enumerate(board):
-        #  board[index] = list(map(int, row))
 
     # rotation 90* pour calcul des col
     board2 = list(zip(*board[::-1]))
