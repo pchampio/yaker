@@ -61,8 +61,11 @@
 </div>
 
 <!-- Start the game -->
-<div class="btn-group btn-group-justified" ng-show="vm.isAdmin && (!vm.gamestart)">
-  <a class="btn btn-success" ng-click="vm.startGame()">Start</a>
+<div class="" ng-show="vm.isAdmin && (!vm.gamestart)">
+  <a class="btn btn-success btn-group btn-group-justified" ng-click="vm.startGame()">Start</a>
+  <div class="well well-sm text-center">
+    <p>Invite: <span class="text-primary">{{vm.invitLink}}</span></p>
+  </div>
 </div>
 
 <!-- Game table -->
@@ -98,8 +101,6 @@
 <div class="btn-group btn-group-justified" >
   <a href="#" class="btn btn-default">Back</a>
 </div>
-
-<br />
 
 <div ng-show="vm.game">
 

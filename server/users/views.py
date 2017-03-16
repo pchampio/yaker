@@ -134,12 +134,13 @@ class AuthUser(APIView):
             response['best_last'].append({"user":save.user.username, "score":save.score})
 
         # Worst Games
-        worst = Save.objects.filter(date__gte=last_day).order_by('score')[0]
-        response['worst'] = {"user":worst.user.username, "score":worst.score}
+        worst = Save.objects.filter(date__gte=last_day).order_by('score').first()
+        if worst is not None:
+            response['worst'] = {"user":worst.user.username, "score":worst.score}
 
         # 7 last user  games
         response['last_games'] = []
-        for save in Save.objects.filter(user=request.user).order_by('date')[:7]:
+        for save in Save.objects.filter(user=request.user).order_by('-date')[:10]:
             response['last_games'].append({"date":save.date.strftime('%d/%m'), "score":save.score})
 
 
@@ -147,12 +148,11 @@ class AuthUser(APIView):
             user=request.user
         ).aggregate(Avg('score'))
 
-        print (round(avg['score__avg'],2))
-        response['score__avg'] = round(avg['score__avg'],2)
+        if avg["score__avg"] is not None:
+            response['score__avg'] = round(avg['score__avg'],2)
 
         return Response(response,status=status.HTTP_200_OK)
 
     def delete(self, request, id, format=None):
         cache_w_delete('user', request.user.id, 'notif', id)
         return Response(None,status=status.HTTP_200_OK)
-

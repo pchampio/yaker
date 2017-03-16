@@ -1,3 +1,4 @@
+# take a board an return the board score
 def is_Sorted(lst):
     if len(lst) == 1:
        return True

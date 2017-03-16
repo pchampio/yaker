@@ -45,8 +45,13 @@
           <b>Average score: </b>{{vm.avg}} Pts
         </h5>
       </div>
-      <canvas class="chart chart-line center-block" chart-data="data" chart-labels="labels"
-        chart-series="series"></canvas>
+        <h4  class="list-group-item">
+          Last 10 Games:
+          <br />
+          <br />
+          <canvas class="chart chart-line center-block" chart-data="data" chart-labels="labels"
+            chart-series="series"></canvas>
+        </h4>
     </div>
   </div>
 </div>
@@ -69,11 +74,11 @@
       </div>
 
       <p class="text-center"><b>
-          <span style="text-decoration: overline;">Best</span> Solo Games:
+          The Real MVP:
       </b></p>
 
       <div class="list-group text-center">
-        <h5  class="list-group-item list-group-item-info" >
+        <h5  class="list-group-item list-group-item-MVP" >
           <b>{{vm.worst.user}}</b>: {{vm.worst.score}} Pts
         </h5>
     </div>

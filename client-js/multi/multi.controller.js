@@ -29,12 +29,19 @@
 
 
     if (!vm.userID) {
-      FlashService.Error("Client error could not found your user.id",true);
+      FlashService.Error("Client error (could not found your user.id) <b>try to relog</b>)",true);
       $location.path('/');
     }
 
     var token  = $rootScope.globals.currentUser.token;
     var socket = null;
+    var url = $location.absUrl().split('?')[1]
+    var currentLocation = window.location;
+
+    if (url) {
+      vm.lobbyName = url;
+      joinLobby();
+    }
 
     vm.lineHeight = 50;
     vm.gamestart  = false;
@@ -62,6 +69,8 @@
 
       socket = new WebSocket($rootScope.backendWs + "/playmulti/lobby/?token=" + token + "&room=" + vm.lobbyName);
 
+      vm.invitLink = currentLocation+"?"+vm.lobbyName;
+
       socket.onmessage = function(e) {
 
         vm.dataLoading = false;
@@ -88,7 +97,16 @@
 
         // on error
         if (response.error && vm.nbBoardSeen != 1) {
+          if (response.error && response.error == "did you try to fool me") {
+            var svg = angular.element(document.querySelector('#svg'));
+            svg.addClass('shake');
+            $timeout(function(){
+              svg.removeClass('shake');
+            }, 500);
+            return;
+          }
           FlashService.Error('<strong><u>Error:</u> '+ response.error + '</strong>',false);
+
           $window.scrollTo(0, 0);
           if (vm.gamestart == false) {
             resetLobby();
@@ -116,6 +134,10 @@
 
           for (var i = 0; i < vm.lobbyInfo.players.length; i++) {
             if (vm.userID == vm.lobbyInfo.players[i]["id"]) {
+              if (vm.lobbyInfo.players[i].deco == true) {
+                FlashService.Error('<strong><u>Error:</u> Lost the connection with lobby ' + vm.lobbyName +'</strong>',false);
+                resetLobby();
+              }
               if (vm.lobbyInfo.players[i].played == 1) {
                 vm.dice = "?";
               }

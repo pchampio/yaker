@@ -48,7 +48,6 @@ class GameSolo():
         score = Score(game['user_board'])
         # save in Database
         Save.objects.create(user=user, game=game_save, score=score, game_board=game_board)
-        # delete from cache
 
         # scores display
 

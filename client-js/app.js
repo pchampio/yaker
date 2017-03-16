@@ -43,8 +43,8 @@
 
     // Configure all charts
     ChartJsProvider.setOptions({
-      chartColors: ['#FF5252', '#FF8A80'],
-      responsive: false,
+      chartColors: ['#ff9800', '#eec030'],
+      responsive: true,
       showLines: true
     });
 
@@ -64,8 +64,8 @@
     $rootScope.backend = "https://api.yaker.drakirus.xyz"
     $rootScope.backendWs = "wss://ws.yaker.drakirus.xyz"
     // DEV
-    // $rootScope.backend = "http://localhost:8000"
-    // $rootScope.backendWs = "ws://localhost:8000"
+    $rootScope.backend = "http://localhost:8000"
+    $rootScope.backendWs = "ws://localhost:8000"
     // keep user logged in after page refresh
     $rootScope.globals = $cookies.getObject('globals') || {};
     if ($rootScope.globals.currentUser) {
@@ -80,6 +80,7 @@
         $location.path('/login');
       }
     });
-  }
+
+  } //end run
 
 })();
