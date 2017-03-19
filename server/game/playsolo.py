@@ -100,6 +100,8 @@ class GameSolo():
 
         #  logger.info(game)
         if "skip" in content:
+            user = User.objects.get(id=user_id)
+            logger.info("User " + user.username + " has skip lvl " + str(game['game_id']))
             cache.delete(key)
             return None,True # close ws
 

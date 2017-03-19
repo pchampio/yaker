@@ -18,20 +18,12 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.contrib.auth.models import User
 from .models import Followership
 
-from game.models import Save
-from django.db.models import Avg
-
-from datetime import date, timedelta
-
-#  There is Q objects that allow to complex lookups. or in filter
-from django.db.models import Q
-
 from .cache_wrapper import *
+from .users_games_stats import *
 
 # import the logging library
 import logging
-
-logger = logging.getLogger('django')
+logger = logging.getLogger(__name__)
 
 class CreateUser(APIView):
     """
@@ -126,33 +118,47 @@ class AuthUser(APIView):
         response = {'username': request.user.username, 'user_id':request.user.id}
         response['notif'] = cache_w_gets('user', request.user.id, 'notif')
 
-        last_day = date.today() - timedelta(days=3)
-
         # best Games
-        response['best_last'] = []
-        for save in Save.objects.filter(date__gte=last_day).order_by('-score')[:3]:
-            response['best_last'].append({"user":save.user.username, "score":save.score})
+        response['best_last'] = get_top_scores()
 
         # Worst Games
-        worst = Save.objects.filter(date__gte=last_day).order_by('score').first()
-        if worst is not None:
-            response['worst'] = {"user":worst.user.username, "score":worst.score}
+        response['worst'] =  get_worst_score()
 
-        # 7 last user  games
+        # 10 last user  games
+        last_games = get_last_games(request.user)
+
+        last_games_all = Save.objects.filter(
+            game__in=(last_games.values_list("game", flat=True))
+        ).values("game_id").annotate(avg = Avg('score'), count = Count('game_id'))
+
         response['last_games'] = []
-        for save in Save.objects.filter(user=request.user).order_by('-date')[:10]:
-            response['last_games'].append({"date":save.date.strftime('%d/%m'), "score":save.score})
+        for save in last_games:
 
+            ## calculate the "best board than X% player" ##
+            count = last_games_all.get(game_id=save.game_id) #  No query call
 
-        avg = Save.objects.filter(
-            user=request.user
-        ).aggregate(Avg('score'))
+            count_better = last_games_all.filter(
+                game_id=save.game_id,
+                score__gt=save.score
+            ) # query call
 
-        if avg["score__avg"] is not None:
-            response['score__avg'] = round(avg['score__avg'],2)
+            if count_better:
+                count_better = count_better[0]['count']
+            else:
+                count_better = 0
+
+            response['last_games'].insert(0,{
+                "date":save.date.strftime('%d/%m'),
+                "score":save.score,
+                # avg of all other users on those 10 games
+                "avg": round(last_games_all.get(game_id=save.game_id)["avg"],2),
+                "top": round((100 - (count_better * 100 / count['count'])),2),
+            })
+
+            response['score__avg'] = get_avg_score(request.user)
 
         return Response(response,status=status.HTTP_200_OK)
 
     def delete(self, request, id, format=None):
-        cache_w_delete('user', request.user.id, 'notif', id)
         return Response(None,status=status.HTTP_200_OK)
+        cache_w_delete('user', request.user.id, 'notif', id)
