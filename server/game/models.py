@@ -44,13 +44,17 @@ class Game(models.Model):
                 user=user
             )
         )
-        if gameObj.count() == 0:
+        if gameObj.exists():
             #  new set
             logger.info("Create new game set (" + user.username + " has complete all exists one)")
             return Game.objects.create()
         else:
             # get existing one
-            return gameObj[random.randint(0,gameObj.count()-1)]
+
+            #  Better than order_by('?')
+            #  http://web.archive.org/web/20110802060451/http://bolddream.com/2010/01/22/getting-a-random-row-from-a-relational-database/
+            random_index = random.randint(0,gameObj.count()-1)
+            return gameObj[random_index]
 
 
 

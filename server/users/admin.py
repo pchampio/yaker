@@ -43,7 +43,7 @@ class CustomUserAdmin(UserAdmin):
                 values('score','date','game_id').first()
             return format_html(
                 '<span style="color:#80BFFF;">{}</span><br/>{}',
-                last_p['date'].strftime('%m/%d/%Y') + last_p['date'].strftime(" at %H:%M"),
+                last_p['date'].strftime('%d/%m/%Y') + last_p['date'].strftime(" at %H:%M"),
                 str(last_p['score']) + "  Pts on game :" + str(last_p['game_id'])
             )
 

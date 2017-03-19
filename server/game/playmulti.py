@@ -141,7 +141,9 @@ class GameMultiLobby():
         # CMD startGame
         if "startGame" in content and int(game["op"]) == user_id and "ingame" not in game:
             game["ingame"] = 1
-            gameSession = Game.objects.order_by('?').first()
+            count = Game.aggregate(count=Count('id'))['count']
+            random_index = randint(0, count - 1)
+            gameSession = Game.objects.all()[random_index]
             game["game_id"] = gameSession.id
 
             for i in reversed(range(len(game["players"]))):
