@@ -36,7 +36,7 @@
   </div>
 </form>
 
-<div class="form-group">
+<div class="form-group" ng-show="vm.avg">
   <div class="panel panel-default">
     <div class="panel-heading"><h5>{{vm.user}}'s stats</h5></div>
     <div class="panel-body">
@@ -49,8 +49,19 @@
           Last 10 Games:
           <br />
           <br />
-          <canvas class="chart chart-line center-block" chart-data="data" chart-labels="labels"
-            chart-series="series"></canvas>
+          <canvas
+            class="chart chart-line center-block"
+            chart-data="data"
+            chart-labels="labels"
+            chart-options="options"
+            chart-series="series" >
+          </canvas>
+
+      <div class="list-group text-center">
+          <h5  class="list-group-item">
+            <b>You're in the top: </b>{{vm.best_off}}% players
+          </h5>
+        </div>
         </h4>
     </div>
   </div>

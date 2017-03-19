@@ -21,10 +21,18 @@
     initController();
 
     function initController() {
-      $scope.labels = ["", "", "", "", "", "", ""];
+      $scope.labels = [];
+      $scope.series = ['Yours', 'Average'];
       $scope.data = [
-        [0, 0, 0, 0, 0, 0, 0]
+        [],
+        []
       ];
+
+      $scope.options = {
+        legend: {
+          display: true
+        }
+      };
 
       loadCurrentUser();
     }
@@ -39,10 +47,14 @@
           vm.th = res.data.best_last[2];
           vm.avg =  res.data.score__avg;
           vm.worst =  res.data.worst;
+          var best_off = 0;
           for (var i = 0, len = res.data.last_games.length; i < len; i++) {
             $scope.labels[i] = res.data.last_games[i].date;
             $scope.data[0][i] = (res.data.last_games[i].score);
+            $scope.data[1][i] = (res.data.last_games[i].avg);
+            best_off += res.data.last_games[i].top;
           }
+          vm.best_off = (best_off / res.data.last_games.length ).toFixed(2);
           if (!vm.notif) {
             return;
           }
