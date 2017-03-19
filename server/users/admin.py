@@ -63,8 +63,12 @@ class CustomUserAdmin(UserAdmin):
     user_last_played.short_description = 'Last Game Played'
     user_max.short_description = 'Max Score'
 
-    list_display = ("username", "email", "date_joined","is_staff",
-                    'user_avg','user_max','user_last_played','user_played_count',)
+    list_display = (
+                    "username",      'user_max', 'user_last_played',
+                'user_played_count', 'user_avg', "email",
+                   "date_joined",    "is_staff",
+    )
+
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
