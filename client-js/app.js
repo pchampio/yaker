@@ -43,21 +43,12 @@
 
     // Configure all charts
     ChartJsProvider.setOptions({
-      chartColors: ['#ff9800', '#eec030'],
+      chartColors: ['#ff9800', '#a3a1a1'],
       responsive: true,
-      showLines: true
+      showLines: true,
     });
 
   }// end conf
-
-  function in_array(needle, haystack){
-    var found = 0;
-    for (var i=0, len=haystack.length;i<len;i++) {
-      if (haystack[i] == needle) return i;
-      found++;
-    }
-    return -1;
-  }
 
   run.$inject = ['$rootScope', '$location', '$cookies', '$http'];
   function run($rootScope, $location, $cookies, $http) {
