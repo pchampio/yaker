@@ -45,7 +45,8 @@
           <b>Average score: </b>{{vm.avg}} Pts
         </h5>
       </div>
-        <h4  class="list-group-item">
+      <h4  class="list-group-item">
+        <div class="list-group text-center">
           Last 10 Games:
           <br />
           <br />
@@ -56,13 +57,11 @@
             chart-options="options"
             chart-series="series" >
           </canvas>
-
-      <div class="list-group text-center">
           <h5  class="list-group-item">
             <b>You're in the top: </b>{{vm.best_off}}% players
           </h5>
         </div>
-        </h4>
+      </h4>
     </div>
   </div>
 </div>
