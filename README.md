@@ -1,12 +1,13 @@
 # Yaker
 > Pierre Champion
+> https://yaker.drakirus.xyz/#!/
 
 L3 SPI Réalisation d'une application web a l'aide du Framework [Django](https://www.djangoproject.com/)
 
 ## Installation  
 
 ### Font-end  
-les fichier dans [client-js](./client-js) doivent êtres asservi par un serveur
+les fichier dans [client-js](./client-js) doivent êtres asservirent par un serveur
 web  
 j'utilise en développement `python3 -m http.server 8080` dans le repertoire
 `client-js`
