@@ -17,7 +17,7 @@ Les src import de l'[index.html](/client-js/index.html#L36) sont à modifier.
 Les variables `backend` dans [app.js](client-js/app.js#L55) sont à adapter.  
 
 
-### Back-end  
+### Back-end `python3`  
 
 le Back-end est situé dans [server](./server).  
 le serveur Back-end est accessible sur le port `8080`  
