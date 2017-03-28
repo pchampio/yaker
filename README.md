@@ -7,9 +7,9 @@ L3 SPI Réalisation d'une application web a l'aide du Framework [Django](https:/
 ## Installation  
 
 ### Font-end  
-les fichier dans [client-js](./client-js) doivent êtres asservi par un serveur
+les fichier dans [client-js](./client-js) doivent êtres asservis par un serveur
 web  
-j'utilise en développement `python3 -m http.server 8080` dans le repertoire
+j'utilise en développement `python3 -m http.server 8080` dans le répertoire
 `client-js`
 
 #### développement  
