@@ -19,7 +19,7 @@ Les variables `backend` dans [app.js](client-js/app.js#L55) sont à adapter.
 
 ### Back-end  
 
-le Back-end est situer dans [server](./server).  
+le Back-end est situé dans [server](./server).  
 le serveur Back-end est accessible sur le port `8080`  
 
 #### développement  
