@@ -20,7 +20,7 @@ Les variables `backend` dans [app.js](client-js/app.js#L55) sont à adapter.
 ### Back-end `python3`  
 
 le Back-end est situé dans [server](./server).  
-le serveur Back-end est accessible sur le port `8080`  
+le serveur Back-end est accessible sur le port `8000`  
 
 #### développement  
 Une base de données [Redis](https://redis.io/download) est nécessaire.
