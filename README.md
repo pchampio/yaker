@@ -22,7 +22,7 @@ Les variables `backend` dans [app.js](client-js/app.js#L55) sont à adapter.
 le Back-end est situé dans [server](./server).  
 le serveur Back-end est accessible sur le port `8000`  
 
-#### développement  
+#### Local Installation :package:  
 Une base de données [Redis](https://redis.io/download) est nécessaire.
 ```
 pip install -r requirements.txt
@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ./manage.py runserver
 ```
 
-#### Docker  
+#### Docker installation :whale:  
 Juste `docker-compose up`
 
 
