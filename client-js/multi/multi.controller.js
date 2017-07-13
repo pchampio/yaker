@@ -64,7 +64,11 @@
     vm.nbBoardSeen = 0; // do not display first error when game start up
     vm.dice = null;
     var gameEnd = false;
-    function joinLobby() {
+    function joinLobby(name) {
+      if (name !== undefined){
+        vm.lobbyName = name;
+      }
+
       vm.dataLoading = true;
 
       socket = new WebSocket($rootScope.backendWs + "/playmulti/lobby/?token=" + token + "&room=" + vm.lobbyName);
