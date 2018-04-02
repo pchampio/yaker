@@ -1,6 +1,6 @@
 # Yaker
 > Pierre Champion
-> https://yaker.drakirus.xyz/#!/
+> https://yaker.drakirus.com/#!/
 
 L3 SPI Réalisation d'une application web a l'aide du Framework [Django](https://www.djangoproject.com/)
 
