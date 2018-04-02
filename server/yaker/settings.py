@@ -38,7 +38,7 @@ else:
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 if not DEBUG:
-    STATIC_URL = 'https://static.yaker.drakirus.xyz/'
+    STATIC_URL = 'https://static.yaker.drakirus.com/'
 else:
     STATIC_URL = '/static/'
 
